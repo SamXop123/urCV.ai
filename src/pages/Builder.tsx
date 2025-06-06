@@ -11,6 +11,8 @@ import SkillsForm from "@/components/resume/SkillsForm";
 import ResumePreview from "@/components/resume/ResumePreview";
 import ResumeAnalysisComponent from "@/components/resume/ResumeAnalysis";
 import ChatBot from "@/components/resume/ChatBot";
+import ResumeGenerator from "@/components/resume/ResumeGenerator";
+import FloatingChatBot from "@/components/FloatingChatBot";
 
 export interface ResumeData {
   personalInfo: {
@@ -102,6 +104,10 @@ const Builder = () => {
     return `Current resume data: ${JSON.stringify(resumeData, null, 2)}`;
   };
 
+  const handleExtractedData = (extractedData: ResumeData) => {
+    setResumeData(extractedData);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Navigation */}
@@ -137,7 +143,7 @@ const Builder = () => {
           {/* Form Section */}
           <Card className="lg:col-span-2 p-6 shadow-xl border-0">
             <Tabs defaultValue="form" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="form">Resume Form</TabsTrigger>
                 <TabsTrigger value="analysis">
                   <Bot className="w-4 h-4 mr-2" />
@@ -147,6 +153,7 @@ const Builder = () => {
                   <MessageCircle className="w-4 h-4 mr-2" />
                   AI Chat
                 </TabsTrigger>
+                <TabsTrigger value="generate">Generate</TabsTrigger>
               </TabsList>
 
               <TabsContent value="form" className="mt-6">
@@ -196,11 +203,16 @@ const Builder = () => {
                 <ResumeAnalysisComponent 
                   data={resumeData}
                   onEnhance={handleEnhanceResume}
+                  onExtractedData={handleExtractedData}
                 />
               </TabsContent>
 
               <TabsContent value="chat" className="mt-6">
                 <ChatBot resumeContext={getResumeContext()} />
+              </TabsContent>
+
+              <TabsContent value="generate" className="mt-6">
+                <ResumeGenerator data={resumeData} />
               </TabsContent>
             </Tabs>
           </Card>
@@ -215,6 +227,9 @@ const Builder = () => {
           </Card>
         </div>
       </div>
+
+      {/* Floating Chat Bot */}
+      <FloatingChatBot />
     </div>
   );
 };

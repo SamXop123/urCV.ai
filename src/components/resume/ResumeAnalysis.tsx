@@ -1,22 +1,27 @@
-
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { analyzeResume, enhanceResume, ResumeAnalysis } from '@/services/groqService';
+import { Input } from '@/components/ui/input';
+import { analyzeResume, enhanceResume, extractResumeDataWithAI, ResumeAnalysis } from '@/services/groqService';
+import { parseResumeFile } from '@/services/fileParserService';
 import { ResumeData } from '@/pages/Builder';
 import { useToast } from '@/hooks/use-toast';
-import { Bot } from 'lucide-react';
+import { Bot, Upload, FileText } from 'lucide-react';
 
 interface ResumeAnalysisProps {
   data: ResumeData;
   onEnhance: (enhancedData: ResumeData) => void;
+  onExtractedData: (extractedData: ResumeData) => void;
 }
 
-const ResumeAnalysisComponent = ({ data, onEnhance }: ResumeAnalysisProps) => {
+const ResumeAnalysisComponent = ({ data, onEnhance, onExtractedData }: ResumeAnalysisProps) => {
   const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleAnalyze = async () => {
@@ -59,6 +64,37 @@ const ResumeAnalysisComponent = ({ data, onEnhance }: ResumeAnalysisProps) => {
     }
   };
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadedFile(file);
+    setIsExtracting(true);
+
+    try {
+      const fileText = await parseResumeFile(file);
+      const extractedData = await extractResumeDataWithAI(fileText);
+      onExtractedData(extractedData);
+      
+      toast({
+        title: "Resume Extracted",
+        description: "Your resume data has been extracted successfully!",
+      });
+    } catch (error) {
+      toast({
+        title: "Extraction Failed",
+        description: "Failed to extract resume data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
+  };
+
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'bg-green-500';
     if (score >= 60) return 'bg-yellow-500';
@@ -71,6 +107,37 @@ const ResumeAnalysisComponent = ({ data, onEnhance }: ResumeAnalysisProps) => {
         <div className="flex items-center space-x-2 mb-4">
           <Bot className="w-5 h-5 text-blue-600" />
           <h3 className="text-xl font-bold">AI Resume Analysis</h3>
+        </div>
+
+        {/* File Upload Section */}
+        <div className="mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg">
+          <div className="text-center">
+            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+            <p className="text-sm text-gray-600 mb-4">
+              Upload your existing resume to extract data automatically
+            </p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.doc,.docx,.txt,image/*"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <Button
+              onClick={triggerFileUpload}
+              disabled={isExtracting}
+              variant="outline"
+              className="border-blue-600 text-blue-600 hover:bg-blue-50 mb-2"
+            >
+              {isExtracting ? 'Extracting...' : 'Upload Resume'}
+            </Button>
+            {uploadedFile && (
+              <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
+                <FileText className="w-4 h-4" />
+                <span>{uploadedFile.name}</span>
+              </div>
+            )}
+          </div>
         </div>
         
         <div className="flex space-x-4">

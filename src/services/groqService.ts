@@ -1,4 +1,3 @@
-
 import Groq from 'groq-sdk';
 
 const groq = new Groq({
@@ -141,6 +140,84 @@ export const chatWithAI = async (message: string, context?: string): Promise<str
     return completion.choices[0]?.message?.content || 'Sorry, I could not process your request.';
   } catch (error) {
     console.error('Error in chat:', error);
+    throw error;
+  }
+};
+
+export const extractResumeDataWithAI = async (resumeText: string): Promise<EnhancedResumeData> => {
+  try {
+    const prompt = `Extract and structure the following resume data into a JSON format:
+
+    ${resumeText}
+
+    Please extract and organize the information into this exact JSON structure:
+    {
+      "personalInfo": {
+        "fullName": "",
+        "email": "",
+        "phone": "",
+        "location": "",
+        "linkedin": "",
+        "summary": ""
+      },
+      "experience": [
+        {
+          "id": "unique-id",
+          "title": "",
+          "company": "",
+          "location": "",
+          "startDate": "",
+          "endDate": "",
+          "current": false,
+          "description": ""
+        }
+      ],
+      "education": [
+        {
+          "id": "unique-id",
+          "degree": "",
+          "school": "",
+          "location": "",
+          "graduationDate": "",
+          "gpa": ""
+        }
+      ],
+      "skills": {
+        "technical": [],
+        "languages": [],
+        "certifications": []
+      }
+    }
+
+    Extract all relevant information and organize it properly. If information is missing, leave the field empty.`;
+
+    const completion = await groq.chat.completions.create({
+      messages: [{ role: 'user', content: prompt }],
+      model: 'llama3-8b-8192',
+      temperature: 0.3,
+    });
+
+    const response = completion.choices[0]?.message?.content;
+    if (!response) throw new Error('No response from AI');
+
+    try {
+      const parsedData = JSON.parse(response);
+      // Generate IDs for experience and education if missing
+      parsedData.experience = parsedData.experience.map((exp: any, index: number) => ({
+        ...exp,
+        id: exp.id || `exp-${index + 1}`
+      }));
+      parsedData.education = parsedData.education.map((edu: any, index: number) => ({
+        ...edu,
+        id: edu.id || `edu-${index + 1}`
+      }));
+      return parsedData;
+    } catch {
+      // Fallback if JSON parsing fails
+      throw new Error('Failed to parse AI response');
+    }
+  } catch (error) {
+    console.error('Error extracting resume data:', error);
     throw error;
   }
 };

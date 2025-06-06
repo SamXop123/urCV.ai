@@ -105,11 +105,18 @@ const Index = () => {
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
             Join thousands of professionals who've landed their dream jobs with urCV.ai
           </p>
-          <Link to="/builder">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold">
-              Get Started for Free
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/builder">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold">
+                Get Started for Free
+              </Button>
+            </Link>
+            <Link to="/templates">
+              <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-lg transition-all duration-300">
+                View Templates
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -122,7 +129,7 @@ const Index = () => {
             </div>
             <span className="text-xl font-bold">urCV.ai</span>
           </div>
-          <p className="text-gray-400">© 2024 urCV.ai. All rights reserved.</p>
+          <p className="text-gray-400">© 2024 N-PCs. All rights reserved.</p>
         </div>
       </footer>
     </div>
