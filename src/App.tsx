@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
 import Builder from "./pages/Builder";
 import NotFound from "./pages/NotFound";
@@ -113,19 +114,21 @@ const App = () => {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        {showLoading ? (
-          <LoadingScreen onComplete={handleLoadingComplete} />
-        ) : (
-          <BrowserRouter>
-            <AnimatedRoutes />
-          </BrowserRouter>
-        )}
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ThemeProvider defaultTheme="light" storageKey="urcv-theme">
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          {showLoading ? (
+            <LoadingScreen onComplete={handleLoadingComplete} />
+          ) : (
+            <BrowserRouter>
+              <AnimatedRoutes />
+            </BrowserRouter>
+          )}
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 
