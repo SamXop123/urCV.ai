@@ -3,11 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { analyzeResume, enhanceResume, extractResumeDataWithAI, ResumeAnalysis } from '@/services/groqService';
 import { parseResumeFile } from '@/services/fileParserService';
 import { ResumeData } from '@/pages/Builder';
 import { useToast } from '@/hooks/use-toast';
-import { Bot, Upload, FileText } from 'lucide-react';
+import { Bot, Upload, FileText, Type } from 'lucide-react';
 
 interface ResumeAnalysisProps {
   data: ResumeData;
@@ -21,6 +22,8 @@ const ResumeAnalysisComponent = ({ data, onEnhance, onExtractedData }: ResumeAna
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [resumeText, setResumeText] = useState('');
+  const [extractionMethod, setExtractionMethod] = useState<'file' | 'text'>('file');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -91,6 +94,37 @@ const ResumeAnalysisComponent = ({ data, onEnhance, onExtractedData }: ResumeAna
     }
   };
 
+  const handleTextExtraction = async () => {
+    if (!resumeText.trim()) {
+      toast({
+        title: "No Text Provided",
+        description: "Please paste your resume text before extracting.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsExtracting(true);
+
+    try {
+      const extractedData = await extractResumeDataWithAI(resumeText);
+      onExtractedData(extractedData);
+      
+      toast({
+        title: "Resume Extracted",
+        description: "Your resume data has been extracted successfully!",
+      });
+    } catch (error) {
+      toast({
+        title: "Extraction Failed",
+        description: "Failed to extract resume data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
   const triggerFileUpload = () => {
     fileInputRef.current?.click();
   };
@@ -109,36 +143,91 @@ const ResumeAnalysisComponent = ({ data, onEnhance, onExtractedData }: ResumeAna
           <h3 className="text-xl font-bold">AI Resume Analysis</h3>
         </div>
 
-        {/* File Upload Section */}
-        <div className="mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg">
-          <div className="text-center">
-            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 mb-4">
-              Upload your existing resume to extract data automatically
-            </p>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".pdf,.doc,.docx,.txt,image/*"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
+        {/* Extraction Method Toggle */}
+        <div className="mb-4">
+          <div className="flex space-x-2">
             <Button
-              onClick={triggerFileUpload}
-              disabled={isExtracting}
-              variant="outline"
-              className="border-blue-600 text-blue-600 hover:bg-blue-50 mb-2"
+              variant={extractionMethod === 'file' ? 'default' : 'outline'}
+              onClick={() => setExtractionMethod('file')}
+              className="flex items-center space-x-2"
             >
-              {isExtracting ? 'Extracting...' : 'Upload Resume'}
+              <Upload className="w-4 h-4" />
+              <span>Upload File</span>
             </Button>
-            {uploadedFile && (
-              <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
-                <FileText className="w-4 h-4" />
-                <span>{uploadedFile.name}</span>
-              </div>
-            )}
+            <Button
+              variant={extractionMethod === 'text' ? 'default' : 'outline'}
+              onClick={() => setExtractionMethod('text')}
+              className="flex items-center space-x-2"
+            >
+              <Type className="w-4 h-4" />
+              <span>Paste Text</span>
+            </Button>
           </div>
         </div>
+
+        {/* File Upload Section */}
+        {extractionMethod === 'file' && (
+          <div className="mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg">
+            <div className="text-center">
+              <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-600 mb-4">
+                Upload your existing resume to extract data automatically
+              </p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx,.txt,image/*"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              <Button
+                onClick={triggerFileUpload}
+                disabled={isExtracting}
+                variant="outline"
+                className="border-blue-600 text-blue-600 hover:bg-blue-50 mb-2"
+              >
+                {isExtracting ? 'Extracting...' : 'Upload Resume'}
+              </Button>
+              {uploadedFile && (
+                <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
+                  <FileText className="w-4 h-4" />
+                  <span>{uploadedFile.name}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Text Input Section */}
+        {extractionMethod === 'text' && (
+          <div className="mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg">
+            <div className="space-y-4">
+              <div className="text-center">
+                <Type className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                <p className="text-sm text-gray-600 mb-4">
+                  Paste your resume text below and let AI extract the data
+                </p>
+              </div>
+              <Textarea
+                value={resumeText}
+                onChange={(e) => setResumeText(e.target.value)}
+                placeholder="Paste your complete resume text here..."
+                className="min-h-[200px] w-full"
+                disabled={isExtracting}
+              />
+              <div className="text-center">
+                <Button
+                  onClick={handleTextExtraction}
+                  disabled={isExtracting || !resumeText.trim()}
+                  variant="outline"
+                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                >
+                  {isExtracting ? 'Extracting...' : 'Extract Resume Data'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
         
         <div className="flex space-x-4">
           <Button
