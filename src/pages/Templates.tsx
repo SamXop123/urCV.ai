@@ -1,8 +1,8 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FileText, ArrowLeft } from "lucide-react";
+import { FileText, ArrowLeft, Check } from "lucide-react";
 import { Link } from "react-router-dom";
+import Footer from "@/components/layout/Footer";
 
 const Templates = () => {
   const templates = [
@@ -10,110 +10,102 @@ const Templates = () => {
       id: 1,
       name: "Modern Professional",
       description: "Clean and modern design perfect for tech professionals",
-      image: "/placeholder.svg",
-      category: "Professional"
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNm6BkgT87_Fus1KSC2Bti9okSzIM0kOd5Pw&s",
+      category: "Professional",
+      type: 'modern'
     },
     {
       id: 2,
       name: "Creative Designer",
       description: "Eye-catching design for creative professionals",
-      image: "/placeholder.svg",
-      category: "Creative"
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfhb5s6aonhcaD9iv2lEWPM-85yaLR8SLMbQ&s",
+      category: "Creative",
+      type: 'creative'
     },
     {
       id: 3,
-      name: "Executive",
+      name: "Executive Standard",
       description: "Sophisticated template for senior executives",
-      image: "/placeholder.svg",
-      category: "Executive"
+      image: "https://www.shutterstock.com/image-photo/business-team-working-late-analyzing-260nw-2400035393.jpg",
+      category: "Executive",
+      type: 'professional'
     },
-    {
-      id: 4,
-      name: "Fresh Graduate",
-      description: "Perfect template for recent graduates",
-      image: "/placeholder.svg",
-      category: "Entry Level"
-    },
-    {
-      id: 5,
-      name: "Minimalist",
-      description: "Simple and clean design focusing on content",
-      image: "/placeholder.svg",
-      category: "Minimal"
-    },
-    {
-      id: 6,
-      name: "Academic",
-      description: "Designed for academic and research positions",
-      image: "/placeholder.svg",
-      category: "Academic"
-    }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-white font-sans">
       {/* Navigation */}
-      <nav className="container mx-auto px-4 py-6">
-        <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <FileText className="w-5 h-5 text-white" />
+      <nav className="border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <FileText className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-2xl font-bold text-gray-900">
+                urCV.ai
+              </span>
+            </Link>
+            <div className="flex items-center space-x-4">
+              <Link to="/">
+                <Button variant="ghost" className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50">
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Back to Home</span>
+                </Button>
+              </Link>
+              <Link to="/builder">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md transition-all duration-200">
+                  Create Resume
+                </Button>
+              </Link>
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              urCV.ai
-            </span>
-          </Link>
-          <div className="flex items-center space-x-4">
-            <Link to="/">
-              <Button variant="ghost" className="flex items-center space-x-2">
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back to Home</span>
-              </Button>
-            </Link>
-            <Link to="/builder">
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
-                Create Resume
-              </Button>
-            </Link>
           </div>
         </div>
       </nav>
 
       {/* Header */}
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-16 bg-gray-50">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold mb-4 tracking-wider uppercase">
+            Premium Collection
+          </div>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">
             Choose Your Perfect
-            <span className="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Resume Template
-            </span>
+            <span className="text-blue-600"> Resume Template </span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
             Select from our professionally designed templates and customize them to create your perfect resume
           </p>
         </div>
 
         {/* Templates Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto px-4 md:px-0">
           {templates.map((template) => (
-            <Card key={template.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-              <div className="aspect-[3/4] bg-gray-100 flex items-center justify-center">
-                <img 
-                  src={template.image} 
+            <Card key={template.id} className="overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-0 shadow-lg group flex flex-col h-full">
+              <div className="aspect-[3/4] bg-gray-200 relative overflow-hidden group-hover:shadow-inner">
+                <img
+                  src={template.image}
                   alt={template.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                 />
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">
+                  <Link to="/builder">
+                    <Button className="bg-white text-gray-900 hover:bg-gray-100 font-bold px-8 py-3 rounded-full">
+                      Preview Template
+                    </Button>
+                  </Link>
+                </div>
               </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-gray-900">{template.name}</h3>
-                  <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-bold text-lg text-gray-900">{template.name}</h3>
+                  <span className="text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded-full font-medium border border-blue-100">
                     {template.category}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 mb-4">{template.description}</p>
+                <p className="text-sm text-gray-600 mb-6 leading-relaxed">{template.description}</p>
                 <Link to="/builder">
-                  <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200">
+                  <Button className="w-full bg-slate-900 hover:bg-blue-600 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300">
                     Use This Template
                   </Button>
                 </Link>
@@ -123,50 +115,49 @@ const Templates = () => {
         </div>
 
         {/* Payment Section */}
-        <div className="mt-16 max-w-4xl mx-auto">
-          <div className="text-center mb-8">
+        <div className="mt-24 max-w-5xl mx-auto">
+          <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Upgrade to Premium
+              Simple, Transparent Pricing
             </h2>
             <p className="text-lg text-gray-600">
               Get access to all premium templates and advanced features
             </p>
           </div>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            <Card className="p-6 border-2 border-gray-200">
+
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <Card className="p-8 border-2 border-transparent shadow-lg hover:shadow-xl transition-all">
               <div className="text-center">
-                <h3 className="text-xl font-semibold mb-2">Basic</h3>
-                <div className="text-3xl font-bold text-gray-900 mb-4">Free</div>
-                <ul className="text-sm text-gray-600 space-y-2 mb-6">
-                  <li>• 3 basic templates</li>
-                  <li>• PDF download</li>
-                  <li>• Basic AI assistance</li>
+                <h3 className="text-xl font-bold mb-2 text-gray-900">Basic</h3>
+                <div className="text-4xl font-extrabold text-gray-900 mb-6">Free</div>
+                <ul className="text-sm text-gray-600 space-y-4 mb-8 text-left max-w-xs mx-auto">
+                  <li className="flex items-center"><Check className="w-4 h-4 text-green-500 mr-2" /> 3 basic templates</li>
+                  <li className="flex items-center"><Check className="w-4 h-4 text-green-500 mr-2" /> PDF download</li>
+                  <li className="flex items-center"><Check className="w-4 h-4 text-green-500 mr-2" /> Basic AI assistance</li>
                 </ul>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full py-6 border-slate-200 text-slate-700 hover:border-slate-900 hover:text-slate-900 font-semibold text-lg">
                   Current Plan
                 </Button>
               </div>
             </Card>
-            
-            <Card className="p-6 border-2 border-blue-500 relative">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-xs font-medium">
-                  POPULAR
+
+            <Card className="p-8 border-2 border-blue-600 relative shadow-2xl scale-105">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 shadow-lg">
+                <span className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-2 rounded-full text-xs font-bold uppercase tracking-wider">
+                  Most Popular
                 </span>
               </div>
-              <div className="text-center">
-                <h3 className="text-xl font-semibold mb-2">Premium</h3>
-                <div className="text-3xl font-bold text-gray-900 mb-1">$9.99</div>
-                <div className="text-sm text-gray-500 mb-4">per month</div>
-                <ul className="text-sm text-gray-600 space-y-2 mb-6">
-                  <li>• All premium templates</li>
-                  <li>• Unlimited downloads</li>
-                  <li>• Advanced AI features</li>
-                  <li>• Priority support</li>
-                  <li>• Custom branding</li>
+              <div className="text-center pt-4">
+                <h3 className="text-xl font-bold mb-2 text-gray-900">Premium</h3>
+                <div className="text-4xl font-extrabold text-gray-900 mb-1">$9.99</div>
+                <div className="text-sm text-gray-500 mb-6">per month</div>
+                <ul className="text-sm text-gray-600 space-y-4 mb-8 text-left max-w-xs mx-auto">
+                  <li className="flex items-center"><Check className="w-4 h-4 text-blue-600 mr-2" /> All premium templates</li>
+                  <li className="flex items-center"><Check className="w-4 h-4 text-blue-600 mr-2" /> Unlimited downloads</li>
+                  <li className="flex items-center"><Check className="w-4 h-4 text-blue-600 mr-2" /> Advanced AI features</li>
+                  <li className="flex items-center"><Check className="w-4 h-4 text-blue-600 mr-2" /> Priority support</li>
                 </ul>
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6 font-bold text-lg shadow-lg hover:shadow-xl transition-all">
                   Upgrade Now
                 </Button>
               </div>
@@ -175,20 +166,11 @@ const Templates = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 mt-16">
-        <div className="container mx-auto px-4 text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-6 h-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <FileText className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-xl font-bold">urCV.ai</span>
-          </div>
-          <p className="text-gray-400">© 2024 N-PCs. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
 
 export default Templates;
+
+

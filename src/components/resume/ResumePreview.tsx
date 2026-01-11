@@ -1,13 +1,21 @@
-
 import { ResumeData } from "@/pages/Builder";
+import ModernTemplate from "./templates/ModernTemplate";
+import ProfessionalTemplate from "./templates/ProfessionalTemplate";
+import CreativeTemplate from "./templates/CreativeTemplate";
 
 interface ResumePreviewProps {
   data: ResumeData;
+  templateName?: 'default' | 'modern' | 'professional' | 'creative';
 }
 
-const ResumePreview = ({ data }: ResumePreviewProps) => {
+const ResumePreview = ({ data, templateName = 'default' }: ResumePreviewProps) => {
+  if (templateName === 'modern') return <ModernTemplate data={data} />;
+  if (templateName === 'professional') return <ProfessionalTemplate data={data} />;
+  if (templateName === 'creative') return <CreativeTemplate data={data} />;
+
+  // Default Template (Original Design)
   return (
-    <div className="bg-white p-8 shadow-lg rounded-lg max-h-[600px] overflow-y-auto">
+    <div className="bg-white p-8 shadow-lg rounded-lg max-h-[600px] overflow-y-auto min-h-[800px]">
       {/* Header */}
       <div className="border-b-2 border-gray-200 pb-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
@@ -81,21 +89,21 @@ const ResumePreview = ({ data }: ResumePreviewProps) => {
       {(data.skills.technical.length > 0 || data.skills.languages.length > 0 || data.skills.certifications.length > 0) && (
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-3">Skills</h2>
-          
+
           {data.skills.technical.length > 0 && (
             <div className="mb-3">
               <h3 className="font-medium text-gray-800 text-sm">Technical Skills</h3>
               <p className="text-sm text-gray-700">{data.skills.technical.join(", ")}</p>
             </div>
           )}
-          
+
           {data.skills.languages.length > 0 && (
             <div className="mb-3">
               <h3 className="font-medium text-gray-800 text-sm">Languages</h3>
               <p className="text-sm text-gray-700">{data.skills.languages.join(", ")}</p>
             </div>
           )}
-          
+
           {data.skills.certifications.length > 0 && (
             <div className="mb-3">
               <h3 className="font-medium text-gray-800 text-sm">Certifications</h3>
@@ -114,5 +122,6 @@ const ResumePreview = ({ data }: ResumePreviewProps) => {
     </div>
   );
 };
+
 
 export default ResumePreview;

@@ -1,102 +1,84 @@
-# urCV.ai
+# urCV.ai - Intelligent Resume Builder
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![React](https://img.shields.io/badge/React-19.0-blue)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.0-38B2AC)](https://tailwindcss.com/)
+![urCV.ai Hero](docs/images/screenshot1.png)
 
-> AI-Powered Resume Builder with Intelligent Analysis, Extraction, and Export
+**urCV.ai** is a state-of-the-art, AI-powered resume builder designed to help job seekers create professional, ATS-friendly resumes in minutes. Leveraging the power of Google's Gemini AI, urCV.ai offers intelligent content suggestions, professional templates, and real-time career advice through an integrated chatbot.
 
-**urCV.ai** is a modern, feature-rich resume builder built with React and TypeScript that leverages artificial intelligence to help you create, analyze, and perfect your resume. With live previews, professional templates, AI-driven insights, and multiple export formats, it streamlines the resume creation process from start to finish.
+## 🚀 Key Features
 
-## ✨ Features
+*   **🤖 AI-Powered Content Generation:** utilizing Google's Gemini-1.5-Flash model to generate professional summaries and career advice.
+*   **🎨 Professional Templates:** diverse collection of templates tailored for different industries (Modern, Professional, Creative, Executive).
+*   **💬 Intelligent Career Assistant:** integrated AI chatbot to answer your career queries and provide resume tips.
+*   **📱 Fully Responsive Design:** seamless experience across all devices, from desktops to mobile phones.
+*   **📄 Real-Time Preview:** see changes instantly as you build your resume.
+*   **⬇️ Multiple Export Formats:** download your resume in high-quality formats.
 
-### 🛠️ Interactive Resume Builder
-- **Step-by-step Form** – Guided resume creation with intuitive form sections
-- **Live Preview** – Real-time WYSIWYG preview that updates as you type
-- **Professional Templates** – Multiple ATS-friendly templates to choose from
-- **Drag-and-Drop** – Reorder sections and content with intuitive drag interfaces
+## � Screenshots
 
-### 🤖 AI-Powered Features
-- **Resume Analysis** – Get instant scoring and detailed feedback on your resume
-- **Content Enhancement** – AI suggestions for improving wording and impact
-- **Chat Assistant** – Interactive AI assistant for career guidance and resume tips
-- **ATS Optimization** – Ensure your resume passes through Applicant Tracking Systems
+### Professional Templates
+![Templates Page](docs/images/screenshot3.png)
 
-### 📄 File Handling
-- **Resume Extraction** – Upload and parse existing resumes (PDF, DOCX, TXT)
-- **Smart Parsing** – Extract structured data from unstructured documents
-- **Batch Import** – Import multiple resumes for comparison and consolidation
+### Intelligent Builder
+![Builder Interface](docs/images/screenshot2.png)
 
-### 📤 Export & Sharing
-- **Multiple Formats** – Export to PDF, Word (.docx), and PNG/JPEG images
-- **Shareable Links** – Generate unique URLs to share your resume
-- **Cloud Backup** – Optional cloud storage for your resumes
-- **Print-Ready** – Optimized for professional printing
+### Template Selection
+![Template Selection](docs/images/screenshot5.png)
 
-### 🎨 Customization
-- **Theme Customization** – Custom color schemes and typography
-- **Layout Control** – Adjust margins, spacing, and section ordering
-- **Multi-language** – Support for multiple languages and locales
-- **Accessibility** – Built with WCAG standards in mind
-
-## 🖥️ Demo / Screenshots
-
-| Home Dashboard | Resume Builder | AI Analysis | Export Options |
-|----------------|----------------|-------------|----------------|
-| ![Home Dashboard](docs/screenshots/home.png) | ![Resume Builder](docs/screenshots/builder.png) | ![AI Analysis](docs/screenshots/analysis.png) | ![Export Options](docs/screenshots/export.png) |
+### Executive Designs
+![Executive Template](docs/images/screenshot4.png)
 
 ## 🛠️ Tech Stack
 
-**Frontend Framework**
-- **React 19** – Component-based UI library
-- **TypeScript** – Type-safe JavaScript development
-- **Vite** – Next-generation frontend tooling
+*   **Frontend:** [React](https://reactjs.org/) + [Vite](https://vitejs.dev/)
+*   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+*   **AI Integration:** [Google Generative AI SDK](https://www.npmjs.com/package/@google/generative-ai)
+*   **Icons:** [Lucide React](https://lucide.dev/)
+*   **UI Components:** Custom built with Shadcn/UI inspiration
 
-**UI & Styling**
-- **Tailwind CSS** – Utility-first CSS framework
-- **shadcn/ui** – Re-usable component library
-- **Framer Motion** – Smooth animations and transitions
+## 🏁 Getting Started
 
-**Document Processing**
-- **docx** – Word document generation
-- **jsPDF + html2canvas** – PDF and image generation
-- **Mammoth.js** – DOCX parsing and conversion
-
-**AI Integration**
-- **Groq SDK** – High-performance AI inference
-- **OpenAI-compatible API** – For GPT-based models
-
-**Utilities**
-- **Zod** – Schema validation
-- **React Hook Form** – Form state management
-- **React Router** – Client-side routing
-
-## 🚀 Quick Start
+Follow these steps to set up the project locally.
 
 ### Prerequisites
-- Node.js 18.0 or higher
-- npm, yarn, or pnpm
-- Groq API key (for AI features)
+
+*   Node.js (v18 or higher)
+*   npm or yarn
 
 ### Installation
 
-1. **Clone the repository**
-git clone https://github.com/yourusername/urcv.ai.git
-cd urcv.ai
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/yourusername/urCV.ai.git
+    cd urCV.ai
+    ```
 
-## Project structure
-- src/pages — page entry points (Home, Builder, Templates).
-- src/components — UI and feature components (resume forms, preview, chatbot).
-- src/services — document generation, file parsing, and AI/groq integrations.
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-## Important notes
-- The repository includes client-side AI integration code. Review and secure any API keys before deployment.
-- File parsing uses basic PDF/text extraction; consider stronger PDF parsers for production.
+3.  **Configure Environment Variables**
+    Create a `.env` file in the root directory and add your Gemini API key:
+    ```env
+    VITE_GEMINI_API_KEY=your_api_key_here
+    ```
 
-## Contributing
-Fork, create a feature branch, and open a pull request.
-Run linters and tests before submitting.
+4.  **Run the development server**
+    ```bash
+    npm run dev
+    ```
 
-## License
-MIT LICENSE
+5.  Open [http://localhost:8080](http://localhost:8080) to view the application in your browser.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is developed under the **AcWoc 2026 Initiative**.
+Copyright © 2026 **N-PCs**. All rights reserved.
+
+<div align="center">
+  <p>Maintained by <a href="mailto:neelpandeyofficial@gmail.com">Neel Pandey</a></p>
+</div>

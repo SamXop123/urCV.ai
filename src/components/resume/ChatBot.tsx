@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { MessageCircle, Bot, Send } from 'lucide-react';
-import { chatWithAI } from '@/services/groqService';
+import { generateResponse } from './aiprompt';
 import { useToast } from '@/hooks/use-toast';
 
 interface Message {
@@ -46,8 +46,8 @@ const ChatBot = ({ resumeContext }: ChatBotProps) => {
     setIsLoading(true);
 
     try {
-      const aiResponse = await chatWithAI(inputMessage, resumeContext);
-      
+      const aiResponse = await generateResponse(inputMessage, resumeContext);
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: aiResponse,
@@ -84,18 +84,16 @@ const ChatBot = ({ resumeContext }: ChatBotProps) => {
             className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[85%] p-3 rounded-lg shadow-sm ${
-                message.sender === 'user'
-                  ? 'bg-blue-600 text-white rounded-br-sm'
-                  : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-bl-sm border'
-              }`}
+              className={`max-w-[85%] p-3 rounded-lg shadow-sm ${message.sender === 'user'
+                ? 'bg-blue-600 text-white rounded-br-sm'
+                : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-bl-sm border'
+                }`}
             >
               <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.text}</p>
-              <p className={`text-xs mt-2 ${
-                message.sender === 'user' 
-                  ? 'text-blue-100' 
-                  : 'text-gray-500 dark:text-gray-400'
-              }`}>
+              <p className={`text-xs mt-2 ${message.sender === 'user'
+                ? 'text-blue-100'
+                : 'text-gray-500 dark:text-gray-400'
+                }`}>
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>

@@ -51,21 +51,43 @@ const Builder = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [resumeData, setResumeData] = useState<ResumeData>({
     personalInfo: {
-      fullName: "",
-      email: "",
-      phone: "",
-      location: "",
-      linkedin: "",
-      summary: "",
+      fullName: "Alex Morgan",
+      email: "alex.morgan@example.com",
+      phone: "+1 (555) 012-3456",
+      location: "San Francisco, CA",
+      linkedin: "linkedin.com/in/alexmorgan",
+      summary: "Innovative and results-oriented professional with a strong background in technology and design. Skilled in project management, team leadership, and creative problem-solving. Committed to delivering high-quality solutions and driving business growth.",
     },
-    education: [],
-    experience: [],
+    education: [
+      {
+        id: "1",
+        degree: "Bachelor of Science in Computer Science",
+        school: "University of Technology",
+        location: "San Francisco, CA",
+        graduationDate: "May 2022",
+        gpa: "3.8"
+      }
+    ],
+    experience: [
+      {
+        id: "1",
+        title: "Senior Developer",
+        company: "Tech Solutions Inc.",
+        location: "San Francisco, CA",
+        startDate: "Jun 2022",
+        endDate: "Present",
+        current: true,
+        description: "Led a team of developers in building scalable web applications. Implemented new features and optimized existing code for better performance."
+      }
+    ],
     skills: {
-      technical: [],
-      languages: [],
-      certifications: [],
+      technical: ["React", "TypeScript", "Node.js", "AWS"],
+      languages: ["English (Native)", "Spanish (Intermediate)"],
+      certifications: ["AWS Certified Solutions Architect"],
     },
   });
+
+  const [templateName, setTemplateName] = useState<'default' | 'modern' | 'professional' | 'creative'>('default');
 
   const steps = [
     { title: "Personal Info", component: PersonalInfoForm },
@@ -120,15 +142,15 @@ const Builder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
       <nav className="container mx-auto px-4 py-6 animate-fade-in">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <FileText className="w-5 h-5 text-white" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-2xl font-bold text-gray-900">
               urCV.ai
             </span>
           </Link>
@@ -141,8 +163,8 @@ const Builder = () => {
       {/* Progress Bar */}
       <div className="container mx-auto px-4 mb-8 animate-fade-in">
         <div className="bg-gray-200 rounded-full h-2 max-w-md mx-auto">
-          <div 
-            className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all duration-500 ease-out"
+          <div
+            className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
           ></div>
         </div>
@@ -152,7 +174,7 @@ const Builder = () => {
       <div className="container mx-auto px-4 pb-8">
         <div className="grid lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {/* Form Section */}
-          <Card className="lg:col-span-2 p-6 shadow-xl border-0 animate-slide-in-left">
+          <Card className="lg:col-span-2 p-6 shadow-md border-0 animate-slide-in-left">
             <Tabs defaultValue="form" className="w-full">
               <TabsList className="grid w-full grid-cols-3 transition-all duration-300">
                 <TabsTrigger value="form" className="transition-all duration-200 hover:scale-105">Resume Form</TabsTrigger>
@@ -174,7 +196,7 @@ const Builder = () => {
                 </div>
 
                 <div className="transition-all duration-400 ease-in-out">
-                  <CurrentStepComponent 
+                  <CurrentStepComponent
                     data={resumeData}
                     updateData={updateResumeData}
                   />
@@ -193,13 +215,13 @@ const Builder = () => {
                   </Button>
 
                   {currentStep === steps.length - 1 ? (
-                    <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white flex items-center space-x-2 transition-all duration-200 hover:scale-105 hover:shadow-lg">
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center space-x-2 transition-all duration-200 hover:scale-105 hover:shadow-lg">
                       <span>Generate Resume</span>
                     </Button>
                   ) : (
                     <Button
                       onClick={handleNext}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white flex items-center space-x-2 transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                      className="bg-blue-600 hover:bg-blue-700 text-white flex items-center space-x-2 transition-all duration-200 hover:scale-105 hover:shadow-lg"
                     >
                       <span>Next</span>
                       <ArrowRight className="w-4 h-4" />
@@ -209,7 +231,7 @@ const Builder = () => {
               </TabsContent>
 
               <TabsContent value="analysis" className="mt-6 animate-fade-in">
-                <ResumeAnalysisComponent 
+                <ResumeAnalysisComponent
                   data={resumeData}
                   onEnhance={handleEnhanceResume}
                   onExtractedData={handleExtractedData}
@@ -217,19 +239,54 @@ const Builder = () => {
               </TabsContent>
 
               <TabsContent value="generate" className="mt-6 animate-fade-in">
-                <ResumeGenerator data={resumeData} />
+                <ResumeGenerator data={resumeData} templateName={templateName} />
               </TabsContent>
             </Tabs>
           </Card>
 
           {/* Preview Section */}
-          <Card className="p-6 shadow-xl border-0 animate-slide-in-right">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Live Preview</h2>
-              <p className="text-gray-600">See your resume update in real-time</p>
+          {/* Preview Section */}
+          <Card className="shadow-md border-0 animate-slide-in-right overflow-hidden flex flex-col h-full bg-gray-100">
+            <div className="p-4 bg-white border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Design & Preview</h2>
+              <div className="mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-2">Choose Template</label>
+                <div className="grid grid-cols-4 gap-2">
+                  <Button
+                    variant={templateName === 'default' ? 'default' : 'outline'}
+                    className="text-[10px] h-8 px-2"
+                    onClick={() => setTemplateName('default')}
+                  >
+                    Default
+                  </Button>
+                  <Button
+                    variant={templateName === 'modern' ? 'default' : 'outline'}
+                    className="text-[10px] h-8 px-2"
+                    onClick={() => setTemplateName('modern')}
+                  >
+                    Modern
+                  </Button>
+                  <Button
+                    variant={templateName === 'professional' ? 'default' : 'outline'}
+                    className="text-[10px] h-8 px-2"
+                    onClick={() => setTemplateName('professional')}
+                  >
+                    Pro
+                  </Button>
+                  <Button
+                    variant={templateName === 'creative' ? 'default' : 'outline'}
+                    className="text-[10px] h-8 px-2"
+                    onClick={() => setTemplateName('creative')}
+                  >
+                    Creative
+                  </Button>
+                </div>
+              </div>
             </div>
-            <div className="transition-all duration-300 ease-in-out">
-              <ResumePreview data={resumeData} />
+            <div className="flex-1 overflow-auto bg-gray-200 p-4 min-h-[600px] flex justify-center">
+              <div className={`w-full ${templateName === 'creative' ? 'max-w-full' : 'max-w-[800px]'} bg-white shadow-xl transition-all duration-300 ease-in-out`}>
+                <ResumePreview data={resumeData} templateName={templateName} />
+              </div>
             </div>
           </Card>
         </div>

@@ -26,7 +26,7 @@ const PersonalInfoForm = ({ data, updateData }: PersonalInfoFormProps) => {
             id="fullName"
             value={data.personalInfo.fullName}
             onChange={(e) => handleInputChange('fullName', e.target.value)}
-            placeholder="John Doe"
+            placeholder="Alex Morgan"
             className="mt-1"
           />
         </div>
@@ -37,7 +37,7 @@ const PersonalInfoForm = ({ data, updateData }: PersonalInfoFormProps) => {
             type="email"
             value={data.personalInfo.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
-            placeholder="john@example.com"
+            placeholder="alex.morgan@example.com"
             className="mt-1"
           />
         </div>
@@ -50,7 +50,7 @@ const PersonalInfoForm = ({ data, updateData }: PersonalInfoFormProps) => {
             id="phone"
             value={data.personalInfo.phone}
             onChange={(e) => handleInputChange('phone', e.target.value)}
-            placeholder="+1 (555) 123-4567"
+            placeholder="+1 (555) 012-3456"
             className="mt-1"
           />
         </div>
@@ -60,7 +60,7 @@ const PersonalInfoForm = ({ data, updateData }: PersonalInfoFormProps) => {
             id="location"
             value={data.personalInfo.location}
             onChange={(e) => handleInputChange('location', e.target.value)}
-            placeholder="New York, NY"
+            placeholder="San Francisco, CA"
             className="mt-1"
           />
         </div>
@@ -72,7 +72,7 @@ const PersonalInfoForm = ({ data, updateData }: PersonalInfoFormProps) => {
           id="linkedin"
           value={data.personalInfo.linkedin}
           onChange={(e) => handleInputChange('linkedin', e.target.value)}
-          placeholder="linkedin.com/in/johndoe"
+          placeholder="linkedin.com/in/alexmorgan"
           className="mt-1"
         />
       </div>
