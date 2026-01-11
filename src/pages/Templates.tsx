@@ -10,7 +10,7 @@ const Templates = () => {
       id: 1,
       name: "Modern Professional",
       description: "Clean and modern design perfect for tech professionals",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNm6BkgT87_Fus1KSC2Bti9okSzIM0kOd5Pw&s",
+      image: "/professional.png",
       category: "Professional",
       type: 'modern'
     },
@@ -18,7 +18,7 @@ const Templates = () => {
       id: 2,
       name: "Creative Designer",
       description: "Eye-catching design for creative professionals",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfhb5s6aonhcaD9iv2lEWPM-85yaLR8SLMbQ&s",
+      image: "/designer.png",
       category: "Creative",
       type: 'creative'
     },
@@ -26,7 +26,7 @@ const Templates = () => {
       id: 3,
       name: "Executive Standard",
       description: "Sophisticated template for senior executives",
-      image: "https://www.shutterstock.com/image-photo/business-team-working-late-analyzing-260nw-2400035393.jpg",
+      image: "/executive.png",
       category: "Executive",
       type: 'professional'
     },
