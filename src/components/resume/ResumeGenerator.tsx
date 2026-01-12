@@ -45,7 +45,29 @@ const ResumeGenerator = ({ data, templateName }: ResumeGeneratorProps) => {
 
     setIsGenerating(true);
     try {
-      const pdfBlob = await generatePDFFromElement(resumePreviewRef.current);
+      const hiddenElement = resumePreviewRef.current;
+      const originalParent = hiddenElement.parentElement;
+      const originalStyle = hiddenElement.getAttribute('style');
+      
+      hiddenElement.style.position = 'fixed';
+      hiddenElement.style.top = '0';
+      hiddenElement.style.left = '0';
+      hiddenElement.style.width = '800px';
+      hiddenElement.style.height = 'auto';
+      hiddenElement.style.opacity = '1';
+      hiddenElement.style.pointerEvents = 'auto';
+      hiddenElement.style.zIndex = '9999';
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const pdfBlob = await generatePDFFromElement(hiddenElement);
+      
+      if (originalStyle) {
+        hiddenElement.setAttribute('style', originalStyle);
+      } else {
+        hiddenElement.removeAttribute('style');
+      }
+      
       downloadFile(pdfBlob, `${data.personalInfo.fullName || 'resume'}.pdf`);
       toast({
         title: "PDF Generated",
@@ -68,8 +90,9 @@ const ResumeGenerator = ({ data, templateName }: ResumeGeneratorProps) => {
     setIsGenerating(true);
     try {
       const canvas = await html2canvas(resumePreviewRef.current, {
-        scale: 2,
         useCORS: true,
+        allowTaint: true,
+        background: '#ffffff'
       });
 
       canvas.toBlob((blob) => {
@@ -109,8 +132,8 @@ const ResumeGenerator = ({ data, templateName }: ResumeGeneratorProps) => {
         <h3 className="text-xl font-bold mb-4">Generate & Download Resume</h3>
 
         {/* Hidden Resume Preview for PDF/Image Generation */}
-        <div ref={resumePreviewRef} className="hidden">
-          <div className="w-[800px]">
+        <div ref={resumePreviewRef} className="fixed -top-[9999px] -left-[9999px] opacity-0 pointer-events-none">
+          <div className="w-[800px] bg-white">
             <ResumePreview data={data} templateName={templateName} />
           </div>
         </div>

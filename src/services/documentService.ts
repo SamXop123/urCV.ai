@@ -144,29 +144,38 @@ export const generateWordDocument = async (resumeData: ResumeData): Promise<Blob
 };
 
 export const generatePDFFromElement = async (element: HTMLElement): Promise<Blob> => {
+
+  await new Promise(resolve => setTimeout(resolve, 200));
+  
+  const rect = element.getBoundingClientRect();
+  const width = rect.width || element.scrollWidth || 800;
+  const height = rect.height || element.scrollHeight || 1000;
+  
   const canvas = await html2canvas(element, {
-    scale: 2,
     useCORS: true,
+    allowTaint: true,
+    background: '#ffffff',
+    width: width,
+    height: height
   });
 
   const imgData = canvas.toDataURL('image/png');
   const pdf = new jsPDF('p', 'mm', 'a4');
   
-  const imgWidth = 210;
-  const pageHeight = 295;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  let heightLeft = imgHeight;
-  let position = 0;
-
-  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
-
-  while (heightLeft >= 0) {
-    position = heightLeft - imgHeight;
-    pdf.addPage();
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-  }
+  // A4 size
+  const pdfWidth = 210;
+  const pdfHeight = 297;
+  const imgWidth = canvas.width;
+  const imgHeight = canvas.height;
+  
+  const ratio = Math.min(pdfWidth / (imgWidth * 0.264583), pdfHeight / (imgHeight * 0.264583));
+  const pdfImgWidth = imgWidth * 0.264583 * ratio;
+  const pdfImgHeight = imgHeight * 0.264583 * ratio;
+  
+  const x = (pdfWidth - pdfImgWidth) / 2;
+  const y = 10;
+  
+  pdf.addImage(imgData, 'PNG', x, y, pdfImgWidth, pdfImgHeight);
 
   return pdf.output('blob');
 };
