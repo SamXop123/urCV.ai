@@ -10,62 +10,62 @@ import { SiReact, SiNextdotjs, SiTypescript, SiTailwindcss, SiVite, SiVercel, Si
 
 // Create a larger array of logos for better animation
 const techLogos = [
-  { 
+  {
     node: <SiReact className="text-[#61DAFB]" size={48} />,
     title: "React",
     href: "https://react.dev"
   },
-  { 
+  {
     node: <SiNextdotjs className="text-white" size={48} />,
     title: "Next.js",
     href: "https://nextjs.org"
   },
-  { 
+  {
     node: <SiTypescript className="text-[#3178C6]" size={48} />,
     title: "TypeScript",
     href: "https://www.typescriptlang.org"
   },
-  { 
+  {
     node: <SiTailwindcss className="text-[#06B6D4]" size={48} />,
     title: "Tailwind CSS",
     href: "https://tailwindcss.com"
   },
-  { 
+  {
     node: <SiVite className="text-[#646CFF]" size={48} />,
     title: "Vite",
     href: "https://vitejs.dev"
   },
-  { 
+  {
     node: <SiVercel className="text-white" size={48} />,
     title: "Vercel",
     href: "https://vercel.com"
   },
-  { 
+  {
     node: <SiFigma className="text-[#F24E1E]" size={48} />,
     title: "Figma",
     href: "https://figma.com"
   },
-  { 
+  {
     node: <SiGithub className="text-white" size={48} />,
     title: "GitHub",
     href: "https://github.com"
   },
-  { 
+  {
     node: <SiNodedotjs className="text-[#339933]" size={48} />,
     title: "Node.js",
     href: "https://nodejs.org"
   },
-  { 
+  {
     node: <SiExpress className="text-white" size={48} />,
     title: "Express",
     href: "https://expressjs.com"
   },
-  { 
+  {
     node: <SiMongodb className="text-[#47A248]" size={48} />,
     title: "MongoDB",
     href: "https://mongodb.com"
   },
-  { 
+  {
     node: <SiDocker className="text-[#2496ED]" size={48} />,
     title: "Docker",
     href: "https://docker.com"
@@ -75,14 +75,24 @@ const techLogos = [
     title: "Google Cloud",
     href: "https://cloud.google.com"
   },
-  { 
+  {
     node: <SiFirebase className="text-[#FFCA28]" size={48} />,
     title: "Firebase",
     href: "https://firebase.google.com"
   },
 ];
 
+import { useState } from 'react';
+import TestimonialsSection from '@/components/TestimonialsSection';
+import ReviewForm from '@/components/ReviewForm';
+
 const Index = () => {
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleReviewSubmitted = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 overflow-hidden font-sans transition-colors duration-300">
       {/* Navigation */}
@@ -185,6 +195,9 @@ const Index = () => {
 
       <ResumeTipsSection />
 
+      <TestimonialsSection refreshTrigger={refreshTrigger} />
+      <ReviewForm onReviewSubmitted={handleReviewSubmitted} />
+
       {/* CTA Section with Logo Loop */}
       <div className="bg-gradient-to-br from-slate-900 to-blue-900 py-20 animate-fade-in">
         <div className="container mx-auto px-4 text-center">
@@ -194,7 +207,7 @@ const Index = () => {
           <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
             Our platform leverages cutting-edge tools to deliver the best resume building experience
           </p>
-          
+
           {/* Main Horizontal Logo Loop */}
           <div className="mb-16">
             <div>
