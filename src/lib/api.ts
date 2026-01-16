@@ -8,7 +8,7 @@ export interface Review {
     avatar: string;
 }
 
-const API_URL = 'http://localhost:3001/api/reviews';
+const API_URL = '/api/reviews';
 
 export const fetchReviews = async (): Promise<Review[]> => {
     try {
