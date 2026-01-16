@@ -289,7 +289,7 @@ const Builder = () => {
                   <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 text-white p-6 shadow-xl border border-white/10">
                     <p className="text-xs uppercase tracking-[0.2em] text-white/70">Builder pulse</p>
                     <h3 className="mt-2 text-2xl font-semibold">
-                      {completedSteps} / {steps.length} sections complete
+                      {completedSteps+1} / {steps.length} sections complete
                     </h3>
                     <p className="mt-3 text-sm text-white/80">
                       {remainingSteps >= 0
