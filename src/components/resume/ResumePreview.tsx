@@ -22,10 +22,24 @@ const ResumePreview = ({ data, templateName = 'default' }: ResumePreviewProps) =
           {data.personalInfo.fullName || "Your Name"}
         </h1>
         <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-600">
-          {data.personalInfo.email && <span>{data.personalInfo.email}</span>}
+          {/* FIXED CODE */}
+          {data.personalInfo.email && (
+            <a href={`mailto:${data.personalInfo.email}`} className="hover:text-blue-600 hover:underline transition-colors">
+              {data.personalInfo.email}
+            </a>
+          )}
           {data.personalInfo.phone && <span>{data.personalInfo.phone}</span>}
           {data.personalInfo.location && <span>{data.personalInfo.location}</span>}
-          {data.personalInfo.linkedin && <span>{data.personalInfo.linkedin}</span>}
+          {data.personalInfo.linkedin && (
+            <a 
+              href={data.personalInfo.linkedin.startsWith('http') ? data.personalInfo.linkedin : `https://${data.personalInfo.linkedin}`}
+              target="_blank" 
+              rel="noreferrer"
+              className="hover:text-blue-600 hover:underline transition-colors"
+            >
+              {data.personalInfo.linkedin}
+            </a>
+          )}
         </div>
       </div>
 
