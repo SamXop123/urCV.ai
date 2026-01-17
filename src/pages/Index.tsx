@@ -1,14 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FileText, User, Edit } from "lucide-react";
+import { FileText, User, Edit, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { useRef } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/layout/Footer";
 import LogoLoop from '@/components/LogoLoop';
 import ResumeTipsSection from '@/components/resume/ResumeTipsSection';
 import { SiReact, SiNextdotjs, SiTypescript, SiTailwindcss, SiVite, SiVercel, SiFigma, SiGithub, SiNodedotjs, SiExpress, SiMongodb, SiPostgresql, SiDocker, SiGooglecloud, SiFirebase } from 'react-icons/si';
 
-// Create a larger array of logos for better animation
+
 const techLogos = [
   {
     node: <SiReact className="text-[#61DAFB]" size={48} />,
@@ -95,101 +97,254 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 overflow-hidden font-sans transition-colors duration-300">
-      {/* Navigation */}
-      <nav className="border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md sticky top-0 z-50">
+      
+      <motion.nav 
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl sticky top-0 z-50 shadow-sm"
+      >
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                <img alt="website img" src="./websitelogo.png"></img>
+            <motion.div 
+              className="flex items-center space-x-2"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden">
+                <motion.img 
+                  alt="website logo" 
+                  src="./websitelogo.png"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.6 }}
+                />
               </div>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 urCV.ai
               </span>
-            </div>
+            </motion.div>
             <div className="flex items-center space-x-4">
               <ThemeToggle />
               <Link to="/builder">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md font-medium">
-                  Create Resume
-                </Button>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl font-medium group relative overflow-hidden">
+                    <span className="relative z-10 flex items-center gap-2">
+                      Create Resume
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                    </span>
+                    
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                  </Button>
+                </motion.div>
               </Link>
             </div>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
-      {/* Hero Section */}
-      <div className="container mx-auto px-4 py-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-        <div className="text-center max-w-4xl mx-auto">
-          <div className="inline-block px-4 py-2 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-full text-sm font-semibold mb-6 animate-fade-in">
-            New: AI-Powered Resume Analysis
-          </div>
-          <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight animate-fade-in">
+      
+      <motion.div 
+        ref={heroRef}
+        style={{ y: heroY, opacity: heroOpacity }}
+        className="relative container mx-auto px-4 py-24 md:py-32 bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-gray-900 dark:via-blue-950/20 dark:to-purple-950/10 transition-colors duration-300 overflow-hidden"
+      >
+        
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              initial={{ 
+                opacity: 0,
+                x: Math.random() * 100 - 50,
+                y: Math.random() * 100 - 50,
+              }}
+              animate={{
+                opacity: [0, 0.5, 0],
+                x: Math.random() * 200 - 100,
+                y: Math.random() * 200 - 100,
+                scale: [1, 1.5, 1],
+              }}
+              transition={{
+                duration: 3 + Math.random() * 2,
+                delay: i * 0.2,
+                repeat: Infinity,
+                repeatType: "reverse",
+              }}
+              className="absolute w-2 h-2 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-sm"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="text-center max-w-4xl mx-auto relative z-10">
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="inline-flex items-center gap-2"
+          >
+            <div className="inline-block px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 text-blue-700 dark:text-blue-300 rounded-full text-sm font-semibold mb-8 shadow-md hover:shadow-lg transition-shadow duration-300 cursor-default">
+              <Sparkles className="w-4 h-4 inline mr-2" />
+              New: AI-Powered Resume Analysis
+            </div>
+          </motion.div>
+
+          {/* Main Heading with stagger animation */}
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="text-5xl md:text-7xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight"
+          >
             Build Your
-            <span className="text-blue-600 dark:text-blue-400"> Professional CV </span>
+            <motion.span
+              initial={{ backgroundPosition: "0% 50%" }}
+              animate={{ backgroundPosition: "200% 50%" }}
+              transition={{ 
+                duration: 5, 
+                repeat: Infinity, 
+                ease: "linear" 
+              }}
+              className="block bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent"
+              style={{ backgroundSize: "200% 100%" }}
+            >
+              Professional CV
+            </motion.span>
             in Minutes
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-delayed">
+          </motion.h1>
+
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed"
+          >
             Create stunning, ATS-friendly resumes with our intelligent builder.
             Stand out from the crowd with professional templates designed by experts.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in">
+          </motion.p>
+
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
             <Link to="/builder">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 font-semibold text-lg">
-                Start Building Now
-              </Button>
+              <motion.div
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-6 rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl font-semibold text-lg group relative overflow-hidden">
+                  <span className="relative z-10 flex items-center gap-2">
+                    Start Building Now
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
+                  <motion.div
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0.5, 0.8, 0.5],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
+                  />
+                </Button>
+              </motion.div>
             </Link>
             <Link to="/templates">
-              <Button size="lg" variant="outline" className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:border-blue-600 dark:hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 px-8 py-4 rounded-lg transition-all duration-300 font-semibold text-lg">
-                View Templates
-              </Button>
+              <motion.div
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button size="lg" variant="outline" className="border-2 border-gray-300 dark:border-gray-600 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm text-gray-700 dark:text-gray-200 hover:border-blue-600 dark:hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 px-10 py-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl font-semibold text-lg">
+                  View Templates
+                </Button>
+              </motion.div>
             </Link>
-          </div>
+          </motion.div>
         </div>
-      </div>
 
-      {/* Features Section */}
-      <div className="container mx-auto px-4 py-24 dark:bg-gray-950 transition-colors duration-300">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Why Choose urCV.ai?
-          </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+        
+        <motion.div
+          animate={{
+            y: [0, -20, 0],
+            rotate: [0, 5, 0],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-3xl blur-2xl"
+        />
+        <motion.div
+          animate={{
+            y: [0, 20, 0],
+            rotate: [0, -5, 0],
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
+          className="absolute bottom-20 left-10 w-32 h-32 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"
+        />
+      </motion.div>
+
+      
+      <div className="container mx-auto px-4 py-24 md:py-32 dark:bg-gray-950 transition-colors duration-300">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          <motion.h2 
+            className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4"
+          >
+            Why Choose{" "}
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              urCV.ai
+            </span>
+            ?
+          </motion.h2>
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Experience the future of resume building with our AI-powered platform
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <Card className="p-8 text-center hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 dark:bg-gray-900 shadow-sm animate-slide-in-left group">
-            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 dark:group-hover:bg-blue-600 transition-colors duration-300">
-              <User className="w-8 h-8 text-blue-600 dark:text-blue-400 group-hover:text-white transition-colors duration-300" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Smart Input Forms</h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              Intuitive forms that guide you through every section, ensuring you don't miss any important details
-            </p>
-          </Card>
-
-          <Card className="p-8 text-center hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 dark:bg-gray-900 shadow-sm animate-fade-in animation-delay-200 group">
-            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 dark:group-hover:bg-blue-600 transition-colors duration-300">
-              <Edit className="w-8 h-8 text-blue-600 dark:text-blue-400 group-hover:text-white transition-colors duration-300" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">AI Enhancement</h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              Our AI analyzes your experience and provides intelligent suggestions to improve impact and readability
-            </p>
-          </Card>
-
-          <Card className="p-8 text-center hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 dark:bg-gray-900 shadow-sm animate-slide-in-right group">
-            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 dark:group-hover:bg-blue-600 transition-colors duration-300">
-              <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400 group-hover:text-white transition-colors duration-300" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Professional Templates</h3>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              Beautiful, ATS-friendly templates designed by professionals to help you make the best impression
-            </p>
-          </Card>
+          <FeatureCard
+            icon={User}
+            title="Smart Input Forms"
+            description="Intuitive forms that guide you through every section, ensuring you don't miss any important details"
+            delay={0.1}
+          />
+          <FeatureCard
+            icon={Edit}
+            title="AI Enhancement"
+            description="Our AI analyzes your experience and provides intelligent suggestions to improve impact and readability"
+            delay={0.2}
+          />
+          <FeatureCard
+            icon={FileText}
+            title="Professional Templates"
+            description="Beautiful, ATS-friendly templates designed by professionals to help you make the best impression"
+            delay={0.3}
+          />
         </div>
       </div>
 
@@ -198,9 +353,9 @@ const Index = () => {
       <TestimonialsSection refreshTrigger={refreshTrigger} />
       <ReviewForm onReviewSubmitted={handleReviewSubmitted} />
 
-      {/* CTA Section with Logo Loop */}
+      
       <section className="relative overflow-hidden py-20 sm:py-24 animate-fade-in">
-        {/* Layered background */}
+        
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950" />
         <div className="absolute -top-24 left-1/2 h-72 w-[42rem] -translate-x-1/2 rounded-full bg-blue-600/20 blur-3xl" />
         <div className="absolute -bottom-28 left-8 h-72 w-72 rounded-full bg-fuchsia-500/10 blur-3xl" />
@@ -220,7 +375,7 @@ const Index = () => {
           </p>
 
           <div className="mt-12 space-y-6">
-            {/* Main Horizontal Logo Loop */}
+            
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-6 backdrop-blur-md shadow-[0_20px_80px_-40px_rgba(0,0,0,0.9)]">
               <LogoLoop
                 logos={techLogos}
@@ -238,7 +393,7 @@ const Index = () => {
               />
             </div>
 
-            {/* Reverse Direction Loop */}
+            
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-6 backdrop-blur-md">
               <LogoLoop
                 logos={[...techLogos].reverse()}

@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, ArrowLeft, ArrowRight, Bot, Home, LayoutTemplate } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "@/components/ThemeToggle";
 import PersonalInfoForm from "@/components/resume/PersonalInfoForm";
 import EducationForm from "@/components/resume/EducationForm";
@@ -61,7 +62,6 @@ export interface ResumeData {
     kaggle?: string;
     codechef?: string;
   };
-  
 }
 
 const Builder = () => {
@@ -213,6 +213,23 @@ const Builder = () => {
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8  rounded-lg flex items-center justify-center">
                 <img alt="website" src="./websitelogo.png"/>
+              </motion.div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                urCV.ai
+              </span>
+            </Link>
+            <div className="flex items-center space-x-4">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-950/30 rounded-full"
+              >
+                <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                  Step {currentStep + 1} of {steps.length}
+                </span>
+              </motion.div>
+              <ThemeToggle />
             </div>
             <span className="text-2xl font-bold text-gray-900 dark:text-white">
               urCV.ai
@@ -249,19 +266,74 @@ const Builder = () => {
             </div>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
-      {/* Progress Bar */}
-      <div className="container mx-auto px-4 mb-8 animate-fade-in">
-        <div className="bg-gray-200 dark:bg-gray-800 rounded-full h-2 max-w-md mx-auto">
-          <div
-            className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-          ></div>
+      
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
+        className="container mx-auto px-4 py-6"
+      >
+        <div className="max-w-md mx-auto">
+          <div className="flex justify-between mb-3">
+            {steps.map((step, index) => (
+              <motion.div
+                key={step.title}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="flex flex-col items-center"
+              >
+                <motion.div
+                  animate={{
+                    scale: currentStep === index ? 1.1 : 1,
+                    backgroundColor: index <= currentStep 
+                      ? "rgb(37, 99, 235)" 
+                      : "rgb(229, 231, 235)"
+                  }}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 ${
+                    index <= currentStep 
+                      ? "bg-blue-600 text-white shadow-lg shadow-blue-500/50" 
+                      : "bg-gray-300 dark:bg-gray-700 text-gray-500"
+                  }`}
+                >
+                  {index < currentStep ? (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    >
+                      <CheckCircle className="w-5 h-5" />
+                    </motion.div>
+                  ) : (
+                    <span className="text-xs font-bold">{index + 1}</span>
+                  )}
+                </motion.div>
+                <span className="text-xs text-gray-600 dark:text-gray-400 hidden sm:block">
+                  {step.title}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+          <div className="relative h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"
+            />
+            {/* Shimmer effect */}
+            <motion.div
+              animate={{ x: ["-100%", "200%"] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+              className="absolute top-0 left-0 h-full w-1/3 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+            />
+          </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Main Content */}
+      
       <div className="container mx-auto px-4 pb-8">
         <div className="flex gap-0 max-w-full mx-auto relative">
           {/* Form Section */}
@@ -304,9 +376,22 @@ const Builder = () => {
                     disabled={currentStep === 0}
                     className="flex items-center space-x-2 transition-all duration-200 hover:scale-105 disabled:opacity-50"
                   >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span>Previous</span>
-                  </Button>
+                    Resume Form
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="analysis" 
+                    className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:shadow-md transition-all duration-300"
+                  >
+                    <Bot className="w-4 h-4 mr-2" />
+                    AI Analysis
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="generate" 
+                    className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:shadow-md transition-all duration-300"
+                  >
+                    Generate
+                  </TabsTrigger>
+                </TabsList>
 
                   {currentStep === steps.length - 1 ? (
                     <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center space-x-2 transition-all duration-200 hover:scale-105 hover:shadow-lg" onClick={() => setShowGenerateModal(true)}>
@@ -346,19 +431,27 @@ const Builder = () => {
                 </div>
               </TabsContent>
 
-              <TabsContent value="analysis" className="mt-6 animate-fade-in">
-                <ResumeAnalysisComponent
-                  data={resumeData}
-                  onEnhance={handleEnhanceResume}
-                  onExtractedData={handleExtractedData}
-                />
-              </TabsContent>
+                      <CurrentStepComponent
+                        data={resumeData}
+                        updateData={updateResumeData}
+                      />
 
-              <TabsContent value="generate" className="mt-6 animate-fade-in">
-                <ResumeGenerator data={resumeData} templateName={templateName} />
-              </TabsContent>
-            </Tabs>
-          </Card>
+                      {/* Navigation Buttons */}
+                      <div className="flex justify-between mt-8">
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Button
+                            variant="outline"
+                            onClick={handlePrevious}
+                            disabled={currentStep === 0}
+                            className="flex items-center space-x-2 disabled:opacity-50 border-2"
+                          >
+                            <ArrowLeft className="w-4 h-4" />
+                            <span>Previous</span>
+                          </Button>
+                        </motion.div>
 
         <div
           onMouseDown={startResize}
@@ -399,12 +492,19 @@ const Builder = () => {
                     className="text-[10px] h-8 px-2"
                     onClick={() => setTemplateName('professional')}
                   >
-                    Pro
-                  </Button>
-                  <Button
-                    variant={templateName === 'creative' ? 'default' : 'outline'}
-                    className="text-[10px] h-8 px-2"
-                    onClick={() => setTemplateName('creative')}
+                    <ResumeAnalysisComponent
+                      data={resumeData}
+                      onEnhance={handleEnhanceResume}
+                      onExtractedData={handleExtractedData}
+                    />
+                  </motion.div>
+                </TabsContent>
+
+                <TabsContent value="generate">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
                   >
                     Creative
                   </Button>
@@ -424,17 +524,23 @@ const Builder = () => {
                   </Button>
                 </div>
               </div>
-            </div>
-            <div className="flex-1 overflow-auto bg-gray-200 p-4 min-h-[600px] flex justify-center">
-              <div className={`w-full ${templateName === 'creative' ? 'max-w-full' : 'max-w-[800px]'} bg-white shadow-xl transition-all duration-300 ease-in-out`}>
-                <ResumePreview data={resumeData} templateName={templateName} />
+              <div className="flex-1 overflow-auto bg-gray-200 dark:bg-gray-950 p-4 min-h-[600px] flex justify-center">
+                <motion.div 
+                  key={templateName}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4 }}
+                  className={`w-full ${templateName === 'creative' ? 'max-w-full' : 'max-w-[800px]'} bg-white dark:bg-gray-900 shadow-2xl`}
+                >
+                  <ResumePreview data={resumeData} templateName={templateName} />
+                </motion.div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </motion.div>
         </div>
       </div>
 
-      {/* Floating Chat Bot */}
+      
       <FloatingChatBot />
 
       <Dialog open={showGenerateModal} onOpenChange={setShowGenerateModal}>
