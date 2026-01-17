@@ -111,7 +111,7 @@ const Builder = () => {
     },
   });
 
-  const [templateName, setTemplateName] = useState<'default' | 'modern' | 'professional' | 'creative'>('default');
+  const [templateName, setTemplateName] = useState<'default' | 'modern' | 'professional' | 'creative' | 'minimalist' | 'bold'>('default');
   const [showGenerateModal, setShowGenerateModal] = useState(false);
 
   const steps = [
@@ -325,13 +325,12 @@ const Builder = () => {
           </Card>
 
           {/* Preview Section */}
-          {/* Preview Section */}
           <Card className="shadow-md border-0 animate-slide-in-right overflow-hidden flex flex-col h-full bg-gray-100">
             <div className="p-4 bg-white border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900 mb-2">Design & Preview</h2>
               <div className="mb-2">
                 <label className="block text-xs font-medium text-gray-700 mb-2">Choose Template</label>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <Button
                     variant={templateName === 'default' ? 'default' : 'outline'}
                     className="text-[10px] h-8 px-2"
@@ -359,6 +358,20 @@ const Builder = () => {
                     onClick={() => setTemplateName('creative')}
                   >
                     Creative
+                  </Button>
+                  <Button
+                    variant={templateName === 'minimalist' ? 'default' : 'outline'}
+                    className="text-[10px] h-8 px-2"
+                    onClick={() => setTemplateName('minimalist')}
+                  >
+                    Minimal
+                  </Button>
+                  <Button
+                    variant={templateName === 'bold' ? 'default' : 'outline'}
+                    className="text-[10px] h-8 px-2"
+                    onClick={() => setTemplateName('bold')}
+                  >
+                    Bold
                   </Button>
                 </div>
               </div>
