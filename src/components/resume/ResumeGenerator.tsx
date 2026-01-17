@@ -37,18 +37,26 @@ const ResumeDownloadOptions = ({ data, templateName, showHeading = true }: Resum
     const element = resumePreviewRef.current;
     const originalStyle = element.getAttribute('style');
 
+    // Position the element visibly for capture
     Object.assign(element.style, {
       position: 'fixed',
-      top: '0',
-      left: '0',
+      top: '0px',
+      left: '0px',
       width: '800px',
       height: 'auto',
       opacity: '1',
       pointerEvents: 'auto',
-      zIndex: '9999',
+      zIndex: '99999',
+      visibility: 'visible',
+      display: 'block',
+      margin: '0',
+      padding: '0',
+      border: 'none',
+      boxShadow: 'none',
     });
 
-    await new Promise(resolve => setTimeout(resolve, 400));
+    // Wait for DOM to render
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     return {
       element,
@@ -65,7 +73,7 @@ const ResumeDownloadOptions = ({ data, templateName, showHeading = true }: Resum
   const generateWordResume = async () => {
     setIsGenerating(true);
     try {
-      const wordBlob = await generateWordDocument(data);
+      const wordBlob = await generateWordDocument(data, templateName);
       downloadFile(wordBlob, `${data.personalInfo.fullName || 'resume'}.docx`);
       toast({
         title: "Word Document Generated",
@@ -92,7 +100,7 @@ const ResumeDownloadOptions = ({ data, templateName, showHeading = true }: Resum
         throw new Error('Unable to access resume preview for PDF generation');
       }
 
-      const pdfBlob = await generatePDF(data, templateName);
+      const pdfBlob = generatePDF(data, templateName);
 
       downloadFile(pdfBlob, `${data.personalInfo.fullName || 'resume'}.pdf`);
 
@@ -100,7 +108,7 @@ const ResumeDownloadOptions = ({ data, templateName, showHeading = true }: Resum
         title: "PDF Generated",
         description: `Your resume has been downloaded in the ${templateName} style!`,
       });
-    }catch (error) {
+    } catch (error) {
       console.error(error);
       toast({
         title: "Generation Failed",
@@ -123,11 +131,30 @@ const ResumeDownloadOptions = ({ data, templateName, showHeading = true }: Resum
         throw new Error('Unable to access resume preview for image generation');
       }
 
-      const canvas = await html2canvas(prepared.element, {
+      // Get the actual inner content div
+      const innerDiv = prepared.element.querySelector('div') as HTMLElement;
+      const targetElement = innerDiv || prepared.element;
+
+      // Ensure the element has proper dimensions
+      if (targetElement.style) {
+        targetElement.style.width = '800px';
+        targetElement.style.height = 'auto';
+        targetElement.style.overflow = 'visible';
+      }
+
+      // Wait for any pending renders
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      const canvas = await html2canvas(targetElement, {
         useCORS: true,
         allowTaint: true,
-        background: '#ffffff'
-      });
+        scale: 2,
+        logging: false,
+        ignoreElements: (element) => {
+          // Don't ignore any elements
+          return false;
+        },
+      } as any);
 
       await new Promise<void>((resolve, reject) => {
         canvas.toBlob((blob) => {
@@ -141,9 +168,10 @@ const ResumeDownloadOptions = ({ data, templateName, showHeading = true }: Resum
           } else {
             reject(new Error('Unable to export resume preview as image'));
           }
-        }, 'image/png');
+        }, 'image/png', 1.0);
       });
     } catch (error) {
+      console.error('Image generation error:', error);
       toast({
         title: "Generation Failed",
         description: "Failed to generate image. Please try again.",
@@ -175,8 +203,27 @@ const ResumeDownloadOptions = ({ data, templateName, showHeading = true }: Resum
       )}
 
       {/* Hidden Resume Preview for PDF/Image Generation */}
-      <div ref={resumePreviewRef} className="fixed -top-[9999px] -left-[9999px] opacity-0 pointer-events-none">
-        <div className="w-[800px] bg-white">
+      <div 
+        ref={resumePreviewRef} 
+        className="fixed -top-[9999px] -left-[9999px] opacity-0 pointer-events-none"
+        style={{ 
+          width: '800px', 
+          height: 'auto', 
+          display: 'block',
+          overflow: 'visible',
+          position: 'fixed',
+        }}
+      >
+        <div 
+          className="w-[800px] bg-white" 
+          style={{ 
+            margin: 0, 
+            padding: 0,
+            overflow: 'visible',
+            height: 'auto',
+            minHeight: '1000px',
+          }}
+        >
           <ResumePreview data={data} templateName={templateName} />
         </div>
       </div>

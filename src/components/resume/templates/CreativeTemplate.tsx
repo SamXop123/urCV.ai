@@ -6,7 +6,7 @@ interface TemplateProps {
 
 const CreativeTemplate = ({ data }: TemplateProps) => {
     return (
-        <div className="bg-white min-h-[1000px] flex flex-col md:flex-row">
+        <div className="bg-white min-h-[1200px] flex flex-col md:flex-row" style={{ overflow: 'visible' }}>
             {/* Sidebar */}
             <aside className="w-full md:w-1/3 bg-slate-900 text-white p-8">
                 <div className="mb-10 text-center">
@@ -113,6 +113,24 @@ const CreativeTemplate = ({ data }: TemplateProps) => {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    </section>
+                )}
+
+                {/* Coding Profiles */}
+                {(Object.entries(data.codingProfiles || {}).filter(([_, url]) => url).length > 0) && (
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-bold text-slate-800 mb-6 border-l-4 border-slate-800 pl-4">Coding Profiles</h2>
+                        <div className="space-y-3">
+                            {Object.entries(data.codingProfiles || {}).map(([platform, url]) => {
+                                if (!url) return null;
+                                return (
+                                    <div key={platform} className="flex items-center gap-4">
+                                        <span className="font-bold text-slate-700 w-24">{platform.charAt(0).toUpperCase() + platform.slice(1)}:</span>
+                                        <span className="text-slate-600">{url}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </section>
                 )}

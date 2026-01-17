@@ -6,7 +6,7 @@ interface TemplateProps {
 
 const ModernTemplate = ({ data }: TemplateProps) => {
     return (
-        <div className="bg-white p-8 h-full min-h-[1000px] font-sans text-gray-800">
+        <div className="bg-white p-8 min-h-[1200px] font-sans text-gray-800" style={{ overflow: 'visible' }}>
             <header className="border-b-4 border-blue-600 pb-6 mb-6">
                 <h1 className="text-4xl font-bold uppercase tracking-wider text-gray-900">
                     {data.personalInfo.fullName || "Your Name"}
