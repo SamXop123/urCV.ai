@@ -15,7 +15,7 @@ const ResumePreview = ({ data, templateName = 'default' }: ResumePreviewProps) =
 
   // Default Template (Original Design)
   return (
-    <div className="bg-white p-8 shadow-lg rounded-lg max-h-[600px] overflow-y-auto min-h-[800px]">
+    <div className="bg-white p-8 shadow-lg rounded-lg min-h-[1000px]" style={{ overflow: 'visible' }}>
       {/* Header */}
       <div className="border-b-2 border-gray-200 pb-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900">

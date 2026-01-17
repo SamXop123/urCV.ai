@@ -1,173 +1,342 @@
 
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, ExternalHyperlink } from 'docx';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, ExternalHyperlink, BorderStyle, AlignmentType } from 'docx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ResumeData } from '@/pages/Builder';
 
-export const generateWordDocument = async (resumeData: ResumeData): Promise<Blob> => {
+// Template-specific styling configs
+const templateStyles = {
+  default: {
+    nameSize: 14,
+    nameBold: true,
+    headingSize: 12,
+    headingBold: true,
+    bodySize: 11,
+    titleColor: undefined,
+    accentColor: undefined,
+  },
+  modern: {
+    nameSize: 16,
+    nameBold: true,
+    headingSize: 13,
+    headingBold: true,
+    bodySize: 11,
+    titleColor: '2563EB',
+    accentColor: '1E40AF',
+  },
+  professional: {
+    nameSize: 18,
+    nameBold: true,
+    headingSize: 13,
+    headingBold: true,
+    bodySize: 11,
+    titleColor: '000000',
+    accentColor: '374151',
+  },
+  creative: {
+    nameSize: 16,
+    nameBold: true,
+    headingSize: 12,
+    headingBold: true,
+    bodySize: 10,
+    titleColor: '7C3AED',
+    accentColor: '6D28D9',
+  },
+};
+
+export const generateWordDocument = async (resumeData: ResumeData, templateName: string = 'default'): Promise<Blob> => {
+  const template = templateStyles[templateName as keyof typeof templateStyles] || templateStyles.default;
+  
   const doc = new Document({
     sections: [{
       properties: {},
       children: [
-        // Header
-        new Paragraph({
-          text: resumeData.personalInfo.fullName,
-          heading: HeadingLevel.TITLE,
-        }),
+        // Header - Name
         new Paragraph({
           children: [
-            new TextRun(`${resumeData.personalInfo.email} | `),
-            new TextRun(`${resumeData.personalInfo.phone} | `),
-            new TextRun(`${resumeData.personalInfo.location}`),
+            new TextRun({
+              text: resumeData.personalInfo.fullName,
+              bold: template.nameBold,
+              size: template.nameSize * 2,
+              color: template.titleColor,
+            }),
           ],
-        }),
-        new Paragraph({
-          text: resumeData.personalInfo.linkedin,
-        }),
-        new Paragraph({
-          text: "",
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 100 },
         }),
         
+        // Contact Info
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: `${resumeData.personalInfo.email} | ${resumeData.personalInfo.phone} | ${resumeData.personalInfo.location}`,
+              size: template.bodySize * 2,
+              color: template.accentColor,
+            }),
+          ],
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 50 },
+        }),
+        
+        // LinkedIn
+        ...(resumeData.personalInfo.linkedin ? [
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: resumeData.personalInfo.linkedin,
+                size: template.bodySize * 2,
+                color: template.accentColor,
+              }),
+            ],
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+          }),
+        ] : []),
 
         // Summary
         ...(resumeData.personalInfo.summary ? [
           new Paragraph({
-            text: "Professional Summary",
-            heading: HeadingLevel.HEADING_1,
+            children: [
+              new TextRun({
+                text: "PROFESSIONAL SUMMARY",
+                bold: template.headingBold,
+                size: template.headingSize * 2,
+                color: template.titleColor,
+              }),
+            ],
+            spacing: { after: 100 },
+            border: templateName === 'modern' ? {
+              bottom: { color: '2563EB', space: 1, style: BorderStyle.SINGLE, size: 6 },
+            } : undefined,
           }),
           new Paragraph({
             text: resumeData.personalInfo.summary,
-          }),
-          new Paragraph({
-            text: "",
+            spacing: { after: 200 },
           }),
         ] : []),
 
         // Experience
         ...(resumeData.experience.length > 0 ? [
           new Paragraph({
-            text: "Experience",
-            heading: HeadingLevel.HEADING_1,
+            children: [
+              new TextRun({
+                text: "EXPERIENCE",
+                bold: template.headingBold,
+                size: template.headingSize * 2,
+                color: template.titleColor,
+              }),
+            ],
+            spacing: { after: 100 },
+            border: templateName === 'modern' ? {
+              bottom: { color: '2563EB', space: 1, style: BorderStyle.SINGLE, size: 6 },
+            } : undefined,
           }),
           ...resumeData.experience.flatMap(exp => [
             new Paragraph({
               children: [
                 new TextRun({
-                  text: `${exp.title} - ${exp.company}`,
+                  text: `${exp.title}`,
                   bold: true,
+                  size: 11 * 2,
+                  color: template.titleColor,
                 }),
               ],
+              spacing: { after: 50 },
             }),
             new Paragraph({
-              text: `${exp.location} | ${exp.startDate} - ${exp.current ? 'Present' : exp.endDate}`,
+              children: [
+                new TextRun({
+                  text: `${exp.company} | ${exp.location}`,
+                  italics: true,
+                  size: 10 * 2,
+                  color: template.accentColor,
+                }),
+              ],
+              spacing: { after: 50 },
             }),
             new Paragraph({
-              text: exp.description,
+              children: [
+                new TextRun({
+                  text: `${exp.startDate} - ${exp.current ? 'Present' : exp.endDate}`,
+                  size: 10 * 2,
+                  color: template.accentColor,
+                }),
+              ],
+              spacing: { after: 50 },
             }),
-            new Paragraph({
-              text: "",
-            }),
+            ...(exp.description ? [
+              new Paragraph({
+                text: exp.description,
+                spacing: { after: 150 },
+              }),
+            ] : []),
           ]),
         ] : []),
 
         // Education
         ...(resumeData.education.length > 0 ? [
           new Paragraph({
-            text: "Education",
-            heading: HeadingLevel.HEADING_1,
+            children: [
+              new TextRun({
+                text: "EDUCATION",
+                bold: template.headingBold,
+                size: template.headingSize * 2,
+                color: template.titleColor,
+              }),
+            ],
+            spacing: { after: 100 },
+            border: templateName === 'modern' ? {
+              bottom: { color: '2563EB', space: 1, style: BorderStyle.SINGLE, size: 6 },
+            } : undefined,
           }),
           ...resumeData.education.flatMap(edu => [
             new Paragraph({
               children: [
                 new TextRun({
-                  text: `${edu.degree} - ${edu.school}`,
+                  text: `${edu.degree}`,
                   bold: true,
+                  size: 11 * 2,
+                  color: template.titleColor,
                 }),
               ],
+              spacing: { after: 50 },
             }),
             new Paragraph({
-              text: `${edu.location} | ${edu.graduationDate}`,
+              children: [
+                new TextRun({
+                  text: `${edu.school}`,
+                  italics: true,
+                  size: 10 * 2,
+                  color: template.accentColor,
+                }),
+              ],
+              spacing: { after: 50 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: `${edu.location} | ${edu.graduationDate}`,
+                  size: 10 * 2,
+                  color: template.accentColor,
+                }),
+              ],
+              spacing: { after: edu.gpa ? 50 : 150 },
             }),
             ...(edu.gpa ? [
               new Paragraph({
-                text: `GPA: ${edu.gpa}`,
+                children: [
+                  new TextRun({
+                    text: `GPA: ${edu.gpa}`,
+                    size: 10 * 2,
+                  }),
+                ],
+                spacing: { after: 150 },
               }),
             ] : []),
-            new Paragraph({
-              text: "",
-            }),
           ]),
         ] : []),
 
         // Skills
-        new Paragraph({
-          text: "Skills",
-          heading: HeadingLevel.HEADING_1,
-        }),
-        ...(resumeData.skills.technical.length > 0 ? [
+        ...(resumeData.skills.technical.length > 0 || resumeData.skills.languages.length > 0 || resumeData.skills.certifications.length > 0 ? [
           new Paragraph({
             children: [
               new TextRun({
-                text: "Technical Skills: ",
-                bold: true,
+                text: "SKILLS",
+                bold: template.headingBold,
+                size: template.headingSize * 2,
+                color: template.titleColor,
               }),
-              new TextRun(resumeData.skills.technical.join(", ")),
             ],
+            spacing: { after: 100 },
+            border: templateName === 'modern' ? {
+              bottom: { color: '2563EB', space: 1, style: BorderStyle.SINGLE, size: 6 },
+            } : undefined,
           }),
+          ...(resumeData.skills.technical.length > 0 ? [
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "Technical: ",
+                  bold: true,
+                  color: template.titleColor,
+                }),
+                new TextRun(resumeData.skills.technical.join(", ")),
+              ],
+              spacing: { after: 100 },
+            }),
+          ] : []),
+          ...(resumeData.skills.languages.length > 0 ? [
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "Languages: ",
+                  bold: true,
+                  color: template.titleColor,
+                }),
+                new TextRun(resumeData.skills.languages.join(", ")),
+              ],
+              spacing: { after: 100 },
+            }),
+          ] : []),
+          ...(resumeData.skills.certifications.length > 0 ? [
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "Certifications: ",
+                  bold: true,
+                  color: template.titleColor,
+                }),
+                new TextRun(resumeData.skills.certifications.join(", ")),
+              ],
+              spacing: { after: 150 },
+            }),
+          ] : []),
         ] : []),
-        ...(resumeData.skills.languages.length > 0 ? [
+
+        // Coding Profiles
+        ...(Object.entries(resumeData.codingProfiles || {}).length > 0 ? [
           new Paragraph({
             children: [
               new TextRun({
-                text: "Languages: ",
-                bold: true,
+                text: "CODING PROFILES",
+                bold: template.headingBold,
+                size: template.headingSize * 2,
+                color: template.titleColor,
               }),
-              new TextRun(resumeData.skills.languages.join(", ")),
             ],
+            spacing: { after: 100 },
+            border: templateName === 'modern' ? {
+              bottom: { color: '2563EB', space: 1, style: BorderStyle.SINGLE, size: 6 },
+            } : undefined,
           }),
-        ] : []),
-        ...(resumeData.skills.certifications.length > 0 ? [
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: "Certifications: ",
-                bold: true,
-              }),
-              new TextRun(resumeData.skills.certifications.join(", ")),
-            ],
-          }),
-        ] : []),
-        new Paragraph({
-          text: "Coding Profiles",
-          heading: HeadingLevel.HEADING_1,
-        }),
-        ...Object.entries(resumeData.codingProfiles || {}).flatMap(([platform, url]) => {
+          ...Object.entries(resumeData.codingProfiles || {}).flatMap(([platform, url]) => {
             if (!url) return [];
             const cleanUrl = url.startsWith('http') ? url : `https://${url}`;
             
             return [
-                new Paragraph({
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `${platform.charAt(0).toUpperCase() + platform.slice(1)}: `,
+                    bold: true,
+                    color: template.titleColor,
+                  }),
+                  new ExternalHyperlink({
                     children: [
-                        new TextRun({
-                            text: `${platform.charAt(0).toUpperCase() + platform.slice(1)}: `,
-                            bold: true,
-                        }),
-                        new ExternalHyperlink({
-                            children: [
-                                new TextRun({
-                                    text: url,
-                                    style: "Hyperlink",
-                                }),
-                            ],
-                            link: cleanUrl,
-                        }),
+                      new TextRun({
+                        text: url,
+                        style: "Hyperlink",
+                        color: "0563C1",
+                      }),
                     ],
-                    spacing: {
-                        after: 100,
-                    },
-                }),
+                    link: cleanUrl,
+                  }),
+                ],
+                spacing: { after: 100 },
+              }),
             ];
-        }),
+          }),
+        ] : []),
       ],
     }],
   });
@@ -265,6 +434,17 @@ const renderDefaultTemplate = (doc: jsPDF, data: ResumeData) => {
       if(data.skills.technical.length) addText("Technical: " + data.skills.technical.join(", "), 10);
       if(data.skills.languages.length) addText("Languages: " + data.skills.languages.join(", "), 10);
       if(data.skills.certifications.length) addText("Certifications: " + data.skills.certifications.join(", "), 10);
+  }
+
+  // Coding Profiles
+  const codingProfilesEntries = Object.entries(data.codingProfiles || {}).filter(([_, url]) => url);
+  if (codingProfilesEntries.length > 0) {
+    yPos += 5;
+    addText("Coding Profiles", 14, true);
+    doc.line(margin, yPos - 6, pageWidth - margin, yPos - 6);
+    codingProfilesEntries.forEach(([platform, url]) => {
+      addText(`${platform.charAt(0).toUpperCase() + platform.slice(1)}: ${url}`, 10);
+    });
   }
 };
 
@@ -392,6 +572,29 @@ const renderModernTemplate = (doc: jsPDF, data: ResumeData) => {
         });
     }
   }
+
+  // Check if we need a new page for coding profiles
+  if (Object.entries(data.codingProfiles || {}).filter(([_, url]) => url).length > 0) {
+    if (leftY > rightY ? leftY > 270 : rightY > 270) {
+      doc.addPage();
+      leftY = 20;
+    }
+    
+    doc.setTextColor(37, 99, 235);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("CODING PROFILES", margin, leftY);
+    leftY += 6;
+    doc.setTextColor(0, 0, 0);
+
+    Object.entries(data.codingProfiles || {}).forEach(([platform, url]) => {
+      if (!url) return;
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`${platform.charAt(0).toUpperCase() + platform.slice(1)}: ${url}`, margin, leftY);
+      leftY += 5;
+    });
+  }
 };
 
 const renderProfessionalTemplate = (doc: jsPDF, data: ResumeData) => {
@@ -482,6 +685,19 @@ const renderProfessionalTemplate = (doc: jsPDF, data: ResumeData) => {
         doc.setFont("times", "normal");
         const lines = doc.splitTextToSize(`Technical: ${data.skills.technical.join(", ")}`, pageWidth - margin * 2);
         doc.text(lines, margin, yPos);
+        yPos += (lines.length * 5) + 6;
+    }
+
+    // Coding Profiles
+    const codingProfilesEntries = Object.entries(data.codingProfiles || {}).filter(([_, url]) => url);
+    if (codingProfilesEntries.length > 0) {
+        addSection("Coding Profiles");
+        codingProfilesEntries.forEach(([platform, url]) => {
+            doc.setFont("times", "normal");
+            doc.setFontSize(11);
+            doc.text(`${platform.charAt(0).toUpperCase() + platform.slice(1)}: ${url}`, margin, yPos);
+            yPos += 5;
+        });
     }
 };
 
@@ -582,6 +798,24 @@ const renderCreativeTemplate = (doc: jsPDF, data: ResumeData) => {
                 doc.text(lines, mainMargin, mainY);
                 mainY += (lines.length * 5) + 6;
             }
+        });
+    }
+
+    // Coding Profiles
+    const codingProfilesEntries = Object.entries(data.codingProfiles || {}).filter(([_, url]) => url);
+    if (codingProfilesEntries.length > 0) {
+        doc.setTextColor(15, 23, 42);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text("Coding Profiles", mainMargin, mainY);
+        mainY += 8;
+
+        codingProfilesEntries.forEach(([platform, url]) => {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(100, 116, 139);
+            doc.text(`${platform.charAt(0).toUpperCase() + platform.slice(1)}: ${url}`, mainMargin, mainY);
+            mainY += 5;
         });
     }
 };
