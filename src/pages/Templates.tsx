@@ -31,6 +31,22 @@ const Templates = () => {
       category: "Executive",
       type: 'professional'
     },
+    {
+      id: 4,
+      name: "Minimalist Clean",
+      description: "Simple and elegant design focusing on content clarity",
+      image: "/professional.png", // Placeholder - replace with actual image
+      category: "Minimalist",
+      type: 'minimalist'
+    },
+    {
+      id: 5,
+      name: "Bold Impact",
+      description: "Eye-catching bold design that makes a strong statement",
+      image: "/designer.png", // Placeholder - replace with actual image
+      category: "Bold",
+      type: 'bold'
+    },
   ];
 
   return (
@@ -80,8 +96,8 @@ const Templates = () => {
           </p>
         </div>
 
-        {/* Templates Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto px-4 md:px-0">
+        {/* Templates Grid - Improved responsive layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto px-4 md:px-0">
           {templates.map((template) => (
             <Card key={template.id} className="overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-0 dark:border dark:border-gray-800 shadow-lg group flex flex-col h-full dark:bg-gray-900">
               <div className="aspect-[3/4] bg-gray-200 dark:bg-gray-800 relative overflow-hidden group-hover:shadow-inner">
@@ -98,14 +114,14 @@ const Templates = () => {
                   </Link>
                 </div>
               </div>
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-grow">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-bold text-lg text-gray-900 dark:text-white">{template.name}</h3>
                   <span className="text-xs px-2 py-1 bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-full font-medium border border-blue-100 dark:border-blue-800">
                     {template.category}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">{template.description}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed flex-grow">{template.description}</p>
                 <Link to="/builder">
                   <Button className="w-full bg-slate-900 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white font-medium shadow-md hover:shadow-lg transition-all duration-300">
                     Use This Template
@@ -116,7 +132,21 @@ const Templates = () => {
           ))}
         </div>
 
-
+        {/* Additional Info Section */}
+        <div className="mt-16 text-center max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Can't Decide? No Problem!
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-8">
+            You can easily switch between templates at any time while building your resume. 
+            Start with any template and change it later with a single click!
+          </p>
+          <Link to="/builder">
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4">
+              Start Building Now
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <Footer />
@@ -125,5 +155,3 @@ const Templates = () => {
 };
 
 export default Templates;
-
-
