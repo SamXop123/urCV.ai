@@ -109,7 +109,11 @@ const Builder = () => {
 
     codingProfiles: {
       github: "",
-      leetcode: ""
+      leetcode: "",
+      hackerrank: "",
+      codeforces: "",
+      kaggle: "",
+      codechef: ""
     },
   });
 
