@@ -367,9 +367,9 @@ export default function ResumeTipsSection() {
               <Link to="/resume-guide" className="block w-full">
                  <Button
                    variant="outline"
-                   className="w-full py-6 text-sm sm:text-base border-2 border-dashed border-blue-300 dark:border-blue-700 hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 group"
+                   className="w-full py-6 text-sm sm:text-base border-2 border-solid border-blue-300 dark:border-blue-700 hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 group"
                  >
-                  <span className="flex items-center justify-center gap-2 text-center leading-relaxed text-balance">
+                  <span className="flex items-left justify-left gap-2 text-left leading-relaxed text-balance">
                      See Complete Resume Guide with Before/After Examples
                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                    </span>
