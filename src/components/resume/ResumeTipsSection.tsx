@@ -351,6 +351,26 @@ export default function ResumeTipsSection() {
                 </Card>
               </motion.div>
             </AnimatePresence>
+
+            {/* CTA Button - Positioned within left column */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mt-8"
+            >
+              <Link to="/resume-guide">
+                <Button
+                  variant="outline"
+                  className="w-full py-6 text-base border border-white/10 dark:border-white/10 hover:border-white/20 dark:hover:border-white/20 bg-white/5 dark:bg-white/5 hover:bg-white/10 dark:hover:bg-white/10 text-gray-900 dark:text-white group transition-all duration-300 rounded-xl"
+                >
+                  <span className="flex items-center justify-center gap-2 font-medium">
+                    See Complete Resume Guide with Before/After Examples
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </Button>
+              </Link>
+            </motion.div>
           </div>
 
           {/* Right Side - Resume Examples */}
