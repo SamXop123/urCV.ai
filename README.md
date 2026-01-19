@@ -229,7 +229,7 @@ git push origin feature/YourFeature
 ---
 
 ```
-📄 License
+📄 MIT License
 📜 This project is developed under the AcWoc 2026 Initiative.
 © 2026 N-PCs — All rights reserved.
 ```
