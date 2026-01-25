@@ -11,6 +11,7 @@ import Builder from "./pages/Builder";
 import NotFound from "./pages/NotFound";
 import Templates from "./pages/Templates";
 import ResumeGuide from "./pages/ResumeGuide";
+import InterviewQuestions from "./pages/InterviewQuestions";
 import LoadingScreen from "./components/LoadingScreen";
 
 const queryClient = new QueryClient();
@@ -37,8 +38,8 @@ const AnimatedRoutes = () => {
   };
 
   const pageTransition = {
-    type: "tween",
-    ease: "anticipate",
+    type: "tween" as const,
+    ease: "anticipate" as const,
     duration: 0.5,
   };
 
@@ -98,6 +99,20 @@ const AnimatedRoutes = () => {
               transition={pageTransition}
             >
               <ResumeGuide />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/interview-questions"
+          element={
+            <motion.div
+              initial="initial"
+              animate="in"
+              exit="out"
+              variants={pageVariants}
+              transition={pageTransition}
+            >
+              <InterviewQuestions />
             </motion.div>
           }
         />
