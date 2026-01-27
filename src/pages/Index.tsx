@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FileText, User, Edit } from "lucide-react";
+import { FileText, User, Edit, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/layout/Footer";
@@ -126,6 +126,12 @@ const Index = () => {
             </div>
             <div className="flex items-center space-x-4">
               <ThemeToggle />
+              <Link to="/interview-questions">
+                <Button variant="outline" className="border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:border-green-600 dark:hover:border-green-400 hover:text-green-600 dark:hover:text-green-400 px-4 py-2 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md font-medium">
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Interview Prep
+                </Button>
+              </Link>
               <Link to="/builder">
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md font-medium">
                   Create Resume
