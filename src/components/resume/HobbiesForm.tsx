@@ -30,8 +30,8 @@ const HobbiesForm = ({ data, updateData }: HobbiesFormProps) => {
 
   return (
     <div className="space-y-6">
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <Card className="p-6 dark:bg-gray-800 dark:border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           Hobbies & Interests
         </h3>
         <div className="flex flex-wrap gap-2 mb-4">
@@ -39,7 +39,7 @@ const HobbiesForm = ({ data, updateData }: HobbiesFormProps) => {
             <Badge
               key={index}
               variant="secondary"
-              className="bg-indigo-100 text-indigo-800 hover:bg-indigo-200 cursor-pointer"
+              className="bg-indigo-100 text-indigo-800 hover:bg-indigo-200 dark:bg-indigo-900 dark:text-indigo-200 dark:hover:bg-indigo-800 cursor-pointer"
               onClick={() => removeHobby(index)}
             >
               {hobby} ×
@@ -52,17 +52,18 @@ const HobbiesForm = ({ data, updateData }: HobbiesFormProps) => {
             onChange={(e) => setNewHobby(e.target.value)}
             placeholder="Add a hobby (e.g., Photography, Hiking, Chess)"
             onKeyPress={(e) => e.key === "Enter" && addHobby()}
+            className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-500"
           />
           <Button
             onClick={addHobby}
-            className="bg-indigo-600 hover:bg-indigo-700"
+            className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800"
           >
             Add
           </Button>
         </div>
       </Card>
 
-      <div className="text-sm text-gray-600 bg-indigo-50 p-4 rounded-lg">
+      <div className="text-sm text-gray-600 bg-indigo-50 dark:bg-indigo-900/30 dark:text-indigo-200 p-4 rounded-lg">
         <p className="font-medium mb-2">💡 Why add hobbies?</p>
         <p>
           Hobbies can show personality and soft skills. For example, team sports

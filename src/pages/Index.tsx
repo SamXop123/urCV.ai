@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FileText, User, Edit, MessageSquare } from "lucide-react";
+import { FileText, User, Edit, MessageSquare, Menu, X } from "lucide-react"; // Added Menu and X icons
 import { Link } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/layout/Footer";
@@ -105,9 +105,14 @@ import ReviewForm from "@/components/ReviewForm";
 
 const Index = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleReviewSubmitted = () => {
     setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
   };
 
   return (
@@ -124,7 +129,9 @@ const Index = () => {
                 urCV.ai
               </span>
             </div>
-            <div className="flex items-center space-x-4">
+            
+            {/* Desktop Navigation Buttons - Hidden on mobile */}
+            <div className="hidden md:flex items-center space-x-4">
               <ThemeToggle />
               <Link to="/interview-questions">
                 <Button variant="outline" className="border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:border-green-600 dark:hover:border-green-400 hover:text-green-600 dark:hover:text-green-400 px-4 py-2 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md font-medium">
@@ -138,7 +145,50 @@ const Index = () => {
                 </Button>
               </Link>
             </div>
+            
+            {/* Mobile Menu Button - Visible only on mobile */}
+            <div className="flex items-center space-x-4 md:hidden">
+              <ThemeToggle />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleMobileMenu}
+                className="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </Button>
+            </div>
           </div>
+          
+          {/* Mobile Menu Dropdown - Only visible when mobileMenuOpen is true */}
+          {mobileMenuOpen && (
+            <div className="md:hidden mt-4 pb-4 animate-fade-in">
+              <div className="flex flex-col space-y-3">
+                <Link to="/interview-questions" onClick={() => setMobileMenuOpen(false)}>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:border-green-600 dark:hover:border-green-400 hover:text-green-600 dark:hover:text-green-400 px-4 py-3 rounded-lg transition-all duration-300 font-medium"
+                  >
+                    <MessageSquare className="w-5 h-5 mr-3" />
+                    Interview Prep
+                  </Button>
+                </Link>
+                <Link to="/builder" onClick={() => setMobileMenuOpen(false)}>
+                  <Button 
+                    className="w-full justify-start bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-all duration-300 font-medium"
+                  >
+                    <FileText className="w-5 h-5 mr-3" />
+                    Create Resume
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 

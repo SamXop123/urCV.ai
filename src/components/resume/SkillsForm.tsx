@@ -47,8 +47,8 @@ const SkillsForm = ({ data, updateData }: SkillsFormProps) => {
   return (
     <div className="space-y-6">
       {/* Technical Skills */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <Card className="p-6 dark:bg-gray-800 dark:border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           Technical Skills
         </h3>
         <div className="flex flex-wrap gap-2 mb-4">
@@ -56,7 +56,7 @@ const SkillsForm = ({ data, updateData }: SkillsFormProps) => {
             <Badge
               key={index}
               variant="secondary"
-              className="bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
+              className="bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800 cursor-pointer"
               onClick={() => removeSkill("technical", index)}
             >
               {skill} ×
@@ -71,10 +71,11 @@ const SkillsForm = ({ data, updateData }: SkillsFormProps) => {
             onKeyPress={(e) =>
               e.key === "Enter" && addSkill("technical", newSkill)
             }
+            className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-500"
           />
           <Button
             onClick={() => addSkill("technical", newSkill)}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
           >
             Add
           </Button>
@@ -82,14 +83,16 @@ const SkillsForm = ({ data, updateData }: SkillsFormProps) => {
       </Card>
 
       {/* Languages */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Languages</h3>
+      <Card className="p-6 dark:bg-gray-800 dark:border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          Languages
+        </h3>
         <div className="flex flex-wrap gap-2 mb-4">
           {data.skills.languages.map((language, index) => (
             <Badge
               key={index}
               variant="secondary"
-              className="bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer"
+              className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800 cursor-pointer"
               onClick={() => removeSkill("languages", index)}
             >
               {language} ×
@@ -104,10 +107,11 @@ const SkillsForm = ({ data, updateData }: SkillsFormProps) => {
             onKeyPress={(e) =>
               e.key === "Enter" && addSkill("languages", newLanguage)
             }
+            className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-500"
           />
           <Button
             onClick={() => addSkill("languages", newLanguage)}
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
           >
             Add
           </Button>
@@ -115,8 +119,8 @@ const SkillsForm = ({ data, updateData }: SkillsFormProps) => {
       </Card>
 
       {/* Certifications */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <Card className="p-6 dark:bg-gray-800 dark:border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           Certifications
         </h3>
         <div className="flex flex-wrap gap-2 mb-4">
@@ -124,7 +128,7 @@ const SkillsForm = ({ data, updateData }: SkillsFormProps) => {
             <Badge
               key={index}
               variant="secondary"
-              className="bg-purple-100 text-purple-800 hover:bg-purple-200 cursor-pointer"
+              className="bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-900 dark:text-purple-200 dark:hover:bg-purple-800 cursor-pointer"
               onClick={() => removeSkill("certifications", index)}
             >
               {cert} ×
@@ -139,17 +143,18 @@ const SkillsForm = ({ data, updateData }: SkillsFormProps) => {
             onKeyPress={(e) =>
               e.key === "Enter" && addSkill("certifications", newCertification)
             }
+            className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-500"
           />
           <Button
             onClick={() => addSkill("certifications", newCertification)}
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800"
           >
             Add
           </Button>
         </div>
       </Card>
 
-      <div className="text-sm text-gray-600 bg-blue-50 p-4 rounded-lg">
+      <div className="text-sm text-gray-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-200 p-4 rounded-lg">
         <p className="font-medium mb-2">💡 Pro Tips:</p>
         <ul className="space-y-1 text-sm">
           <li>• Click on any skill badge to remove it</li>

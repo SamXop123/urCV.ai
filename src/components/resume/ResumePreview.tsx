@@ -30,7 +30,7 @@ const ResumePreview = ({
   // Default Template (Original Design)
   return (
     <div
-      className="bg-white p-8 shadow-lg rounded-lg min-h-[1000px]"
+      className="bg-white p-8 shadow-lg rounded-lg min-h-full"
       style={{ overflow: "visible" }}
     >
       {/* Header */}

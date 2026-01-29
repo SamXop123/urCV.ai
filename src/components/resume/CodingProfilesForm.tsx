@@ -96,8 +96,10 @@ const CodingProfilesForm = ({ data, updateData }: CodingProfilesFormProps) => {
   return (
     <div className="space-y-6">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Coding Profiles</h3>
-        <p className="text-sm text-gray-500">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Coding Profiles
+        </h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           Showcase your problem-solving skills by linking your coding profiles.
           Enter your username or full profile URL.
         </p>
@@ -111,7 +113,12 @@ const CodingProfilesForm = ({ data, updateData }: CodingProfilesFormProps) => {
             ] || "";
           return (
             <div key={platform.id} className="grid w-full items-center gap-1.5">
-              <Label htmlFor={platform.id}>{platform.label}</Label>
+              <Label 
+                htmlFor={platform.id} 
+                className="dark:text-gray-300"
+              >
+                {platform.label}
+              </Label>
               <div className="flex gap-2">
                 <Input
                   id={platform.id}
@@ -120,6 +127,7 @@ const CodingProfilesForm = ({ data, updateData }: CodingProfilesFormProps) => {
                     handleInputChange(platform.id, e.target.value)
                   }
                   placeholder={platform.placeholder}
+                  className="dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 dark:placeholder:text-gray-500"
                 />
                 <Button
                   variant="outline"
@@ -127,12 +135,13 @@ const CodingProfilesForm = ({ data, updateData }: CodingProfilesFormProps) => {
                   onClick={() => openLink(platform.id, value)}
                   disabled={!value}
                   title={`Visit ${platform.label} Profile`}
+                  className="dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
                 >
                   <ExternalLink className="w-4 h-4" />
                 </Button>
               </div>
               {value && (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   Will open: {getPlatformUrl(platform.id, value)}
                 </p>
               )}
