@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FileText, User, Edit, MessageSquare, Menu, X } from "lucide-react"; // Added Menu and X icons
+import { FileText, User, Edit, MessageSquare, Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/layout/Footer";
@@ -153,14 +153,26 @@ const Index = () => {
                 variant="ghost"
                 size="icon"
                 onClick={toggleMobileMenu}
-                className="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 relative w-10 h-10 rounded-lg transition-all duration-300"
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               >
-                {mobileMenuOpen ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
+                {/* Menu Icon with rotation */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Menu 
+                    className={`w-6 h-6 transition-all duration-300 ease-out ${
+                      mobileMenuOpen 
+                        ? 'opacity-0 rotate-90 scale-0' 
+                        : 'opacity-100 rotate-0 scale-100'
+                    }`}
+                  />
+                  <X 
+                    className={`w-6 h-6 absolute transition-all duration-300 ease-out ${
+                      mobileMenuOpen 
+                        ? 'opacity-100 rotate-0 scale-100' 
+                        : 'opacity-0 -rotate-90 scale-0'
+                    }`}
+                  />
+                </div>
               </Button>
             </div>
           </div>
