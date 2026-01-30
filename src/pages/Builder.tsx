@@ -55,11 +55,12 @@ export interface ResumeData {
     kaggle?: string;
     codechef?: string;
   };
-  
+
 }
 
 const Builder = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [isStepValid, setIsStepValid] = useState(true);
   const [resumeData, setResumeData] = useState<ResumeData>({
     personalInfo: {
       fullName: "Alex Morgan",
@@ -118,12 +119,14 @@ const Builder = () => {
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
+      setIsStepValid(true); // Reset to true for next step
     }
   };
 
   const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+      setIsStepValid(true); // Reset to true for previous step
     }
   };
 
@@ -165,7 +168,7 @@ const Builder = () => {
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8  rounded-lg flex items-center justify-center">
-                <img alt="website" src="./websitelogo.png"/>
+              <img alt="website" src="./websitelogo.png" />
             </div>
             <span className="text-2xl font-bold text-gray-900 dark:text-white">
               urCV.ai
@@ -217,6 +220,7 @@ const Builder = () => {
                   <CurrentStepComponent
                     data={resumeData}
                     updateData={updateResumeData}
+                    setIsValid={setIsStepValid}
                   />
                 </div>
 
@@ -239,7 +243,8 @@ const Builder = () => {
                   ) : (
                     <Button
                       onClick={handleNext}
-                      className="bg-blue-600 hover:bg-blue-700 text-white flex items-center space-x-2 transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                      disabled={!isStepValid}
+                      className="bg-blue-600 hover:bg-blue-700 text-white flex items-center space-x-2 transition-all duration-200 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:scale-100 disabled:bg-gray-400"
                     >
                       <span>Next</span>
                       <ArrowRight className="w-4 h-4" />

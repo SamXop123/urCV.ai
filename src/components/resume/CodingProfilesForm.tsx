@@ -8,9 +8,10 @@ import { Card } from "@/components/ui/card";
 interface CodingProfilesFormProps {
   data: ResumeData;
   updateData: (section: keyof ResumeData, data: any) => void;
+  setIsValid?: (isValid: boolean) => void;
 }
 
-const CodingProfilesForm = ({ data, updateData }: CodingProfilesFormProps) => {
+const CodingProfilesForm = ({ data, updateData, setIsValid }: CodingProfilesFormProps) => {
   const handleInputChange = (field: string, value: string) => {
     updateData('codingProfiles', {
       ...data.codingProfiles,
@@ -50,8 +51,8 @@ const CodingProfilesForm = ({ data, updateData }: CodingProfilesFormProps) => {
                 onChange={(e) => handleInputChange(platform.id, e.target.value)}
                 placeholder={platform.placeholder}
               />
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="icon"
                 onClick={() => openLink(data.codingProfiles?.[platform.id as keyof typeof data.codingProfiles] || '')}
                 disabled={!data.codingProfiles?.[platform.id as keyof typeof data.codingProfiles]}
