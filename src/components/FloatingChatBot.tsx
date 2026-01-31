@@ -1,6 +1,6 @@
 // src/components/FloatingChatBot.tsx
 import React, { useState, useRef, useEffect } from 'react';
-import { sendMessageToBot } from '../../services/chatService'; 
+import { sendMessageToBot } from '../services/chatService'; 
 // Ensure you have lucide-react installed: npm install lucide-react
 // If not, remove imports and use text/emoji instead
 import { MessageCircle, X, Send, Loader2 } from 'lucide-react'; 
