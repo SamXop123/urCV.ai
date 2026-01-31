@@ -204,17 +204,24 @@ const Templates = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isHeaderInView = useInView(containerRef, { once: true });
   const [selectedCategory, setSelectedCategory] = useState<Category>("All");
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
-  const filteredTemplates = useMemo(() =>
-    selectedCategory === "All"
-      ? templates
-      : templates.filter((t) => t.category === selectedCategory),
+  const filteredTemplates = useMemo(
+    () =>
+      selectedCategory === "All"
+        ? templates
+        : templates.filter((t) => t.category === selectedCategory),
     [selectedCategory]
   );
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 font-sans transition-colors duration-300">
-      <nav className="border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl sticky top-0 z-50 shadow-sm">
+      <motion.nav
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl sticky top-0 z-50 shadow-sm"
+      >
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2 group">
@@ -245,13 +252,45 @@ const Templates = () => {
             </div>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
       <div className="relative container mx-auto px-4 py-20 md:py-28 bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-gray-900 dark:via-blue-950/20 dark:to-purple-950/10 transition-colors duration-300 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(15)].map((_, i) => (
+            <motion.div
+              key={i}
+              initial={{
+                opacity: 0,
+                x: Math.random() * 100 - 50,
+                y: Math.random() * 100 - 50,
+              }}
+              animate={{
+                opacity: [0, 0.3, 0],
+                x: Math.random() * 200 - 100,
+                y: Math.random() * 200 - 100,
+                scale: [1, 1.5, 1],
+              }}
+              transition={{
+                duration: 3 + Math.random() * 2,
+                delay: i * 0.2,
+                repeat: Infinity,
+                repeatType: "reverse",
+              }}
+              className="absolute w-2 h-2 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-sm"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+            />
+          ))}
+        </div>
+
         <div ref={containerRef} className="text-center mb-16 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            animate={isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            animate={
+              isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
+            }
             transition={{ duration: 0.8, delay: 0.2 }}
             className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 text-blue-700 dark:text-blue-300 rounded-full text-xs font-semibold mb-6 tracking-wider uppercase shadow-md"
           >
@@ -261,7 +300,9 @@ const Templates = () => {
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
-            animate={isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            animate={
+              isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
+            }
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight"
           >
@@ -273,15 +314,18 @@ const Templates = () => {
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
-            animate={isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            animate={
+              isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+            }
             transition={{ duration: 0.8, delay: 0.5 }}
             className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed"
           >
-            Select from our professionally designed templates and customize them to create your perfect resume
+            Select from our professionally designed templates and customize them
+            to create your perfect resume
           </motion.p>
         </div>
 
-        <div className="flex flex-wrap gap-2 justify-center mb-12">
+        <div className="hidden md:flex flex-wrap gap-2 justify-center mb-12">
           {categories.map((category) => (
             <Button
               key={category}
@@ -292,11 +336,14 @@ const Templates = () => {
               {category}
             </Button>
           ))}
-          <Sheet>
+        </div>
+
+        <div className="md:hidden flex justify-center mb-8">
+          <Sheet open={isMobileFiltersOpen} onOpenChange={setIsMobileFiltersOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" className="md:hidden rounded-full px-6">
+              <Button variant="outline" className="rounded-full px-6">
                 <Menu className="w-4 h-4 mr-2" />
-                Filter
+                Filter: {selectedCategory}
               </Button>
             </SheetTrigger>
             <SheetContent>
@@ -307,9 +354,12 @@ const Templates = () => {
                 {categories.map((category) => (
                   <Button
                     key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
+                    variant={
+                      selectedCategory === category ? "default" : "outline"
+                    }
                     onClick={() => {
                       setSelectedCategory(category);
+                      setIsMobileFiltersOpen(false);
                     }}
                     className="justify-start px-6 transition-all duration-300"
                   >
@@ -324,7 +374,11 @@ const Templates = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto px-4 md:px-0 relative z-10">
           <AnimatePresence mode="popLayout">
             {filteredTemplates.map((template, index) => (
-              <TemplateCard key={template.id} template={template} index={index} />
+              <TemplateCard
+                key={template.id}
+                template={template}
+                index={index}
+              />
             ))}
           </AnimatePresence>
         </div>
@@ -332,7 +386,9 @@ const Templates = () => {
         {filteredTemplates.length === 0 && (
           <div className="text-center py-20">
             <FileText className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">No templates found</h3>
+            <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
+              No templates found
+            </h3>
             <Button
               variant="link"
               onClick={() => setSelectedCategory("All")}
