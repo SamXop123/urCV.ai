@@ -19,6 +19,14 @@ import {
     Clock,
     Zap,
     Filter,
+    BarChart3,
+    RefreshCw,
+    Trophy,
+    Target,
+    TrendingUp,
+    AlertCircle,
+    Loader2,
+    User,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -32,6 +40,17 @@ import {
     type CodingPattern,
     type LanguageTopic,
 } from "@/lib/codingContent";
+import {
+    type PlatformStats,
+    fetchLeetCodeStats,
+    fetchCodeforcesStats,
+    getCachedStats,
+    setCachedStats,
+    getCachedUsernames,
+    setCachedUsernames,
+    getCodeforcesRankColor,
+} from "@/lib/platformStatsService";
+import { useCallback } from "react";
 
 const difficultyColors = {
     easy: "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800",
@@ -57,6 +76,13 @@ const CodingPrep = () => {
     const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
     const [completedProblems, setCompletedProblems] = useState<Set<string>>(new Set());
 
+    // Platform Stats State
+    const [leetcodeUsername, setLeetcodeUsername] = useState("");
+    const [codeforcesHandle, setCodeforcesHandle] = useState("");
+    const [platformStats, setPlatformStats] = useState<PlatformStats | null>(null);
+    const [isLoadingStats, setIsLoadingStats] = useState(false);
+    const [statsErrors, setStatsErrors] = useState<{ leetcode?: string; codeforces?: string }>({});
+
     // Load completed problems from localStorage
     useEffect(() => {
         const saved = localStorage.getItem("completedCodingProblems");
@@ -64,6 +90,59 @@ const CodingPrep = () => {
             setCompletedProblems(new Set(JSON.parse(saved)));
         }
     }, []);
+
+    // Load cached platform stats
+    useEffect(() => {
+        const { leetcode, codeforces } = getCachedUsernames();
+        setLeetcodeUsername(leetcode);
+        setCodeforcesHandle(codeforces);
+
+        const cachedStats = getCachedStats();
+        if (cachedStats) {
+            setPlatformStats(cachedStats);
+        }
+    }, []);
+
+    // Fetch stats function
+    const fetchStats = useCallback(async () => {
+        if (!leetcodeUsername.trim() && !codeforcesHandle.trim()) return;
+
+        setIsLoadingStats(true);
+        setStatsErrors({});
+
+        const newStats: PlatformStats = {
+            leetcode: null,
+            codeforces: null,
+            lastFetched: Date.now(),
+            errors: {},
+        };
+
+        // Fetch LeetCode stats
+        if (leetcodeUsername.trim()) {
+            try {
+                newStats.leetcode = await fetchLeetCodeStats(leetcodeUsername);
+            } catch (error) {
+                newStats.errors.leetcode = error instanceof Error ? error.message : "Failed to fetch";
+                setStatsErrors((prev) => ({ ...prev, leetcode: newStats.errors.leetcode }));
+            }
+        }
+
+        // Fetch Codeforces stats
+        if (codeforcesHandle.trim()) {
+            try {
+                newStats.codeforces = await fetchCodeforcesStats(codeforcesHandle);
+            } catch (error) {
+                newStats.errors.codeforces = error instanceof Error ? error.message : "Failed to fetch";
+                setStatsErrors((prev) => ({ ...prev, codeforces: newStats.errors.codeforces }));
+            }
+        }
+
+        setPlatformStats(newStats);
+        setCachedStats(newStats);
+        setCachedUsernames(leetcodeUsername, codeforcesHandle);
+        setIsLoadingStats(false);
+    }, [leetcodeUsername, codeforcesHandle]);
+
 
     // Save completed problems to localStorage
     const toggleProblemComplete = (id: string) => {
@@ -436,7 +515,7 @@ const CodingPrep = () => {
 
                 {/* Tabs */}
                 <Tabs defaultValue="problems" className="max-w-4xl mx-auto">
-                    <TabsList className="grid w-full grid-cols-4 mb-8">
+                    <TabsList className="grid w-full grid-cols-5 mb-8">
                         <TabsTrigger value="problems" className="flex items-center gap-2">
                             <Code className="w-4 h-4" />
                             <span className="hidden sm:inline">Problems</span>
@@ -452,6 +531,10 @@ const CodingPrep = () => {
                         <TabsTrigger value="languages" className="flex items-center gap-2">
                             <Layers className="w-4 h-4" />
                             <span className="hidden sm:inline">Languages</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="stats" className="flex items-center gap-2">
+                            <BarChart3 className="w-4 h-4" />
+                            <span className="hidden sm:inline">Stats</span>
                         </TabsTrigger>
                     </TabsList>
 
@@ -544,6 +627,190 @@ const CodingPrep = () => {
                         <div className="grid gap-4">
                             {languageTopics.map(renderLanguageCard)}
                         </div>
+                    </TabsContent>
+
+                    {/* Stats Tab */}
+                    <TabsContent value="stats" className="space-y-6">
+                        <Card className="p-6 border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <User className="w-5 h-5" />
+                                    Platform Settings
+                                </h3>
+                                <Button
+                                    onClick={fetchStats}
+                                    disabled={isLoadingStats || (!leetcodeUsername && !codeforcesHandle)}
+                                    size="sm"
+                                    className="flex items-center gap-2"
+                                >
+                                    {isLoadingStats ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        <RefreshCw className="w-4 h-4" />
+                                    )}
+                                    {isLoadingStats ? "Loading..." : "Fetch Stats"}
+                                </Button>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        LeetCode Username
+                                    </label>
+                                    <Input
+                                        placeholder="e.g., leetcode"
+                                        value={leetcodeUsername}
+                                        onChange={(e) => setLeetcodeUsername(e.target.value)}
+                                        className="bg-white dark:bg-gray-900"
+                                    />
+                                    {statsErrors.leetcode && (
+                                        <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                                            <AlertCircle className="w-4 h-4" />
+                                            {statsErrors.leetcode}
+                                        </p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Codeforces Handle
+                                    </label>
+                                    <Input
+                                        placeholder="e.g., tourist"
+                                        value={codeforcesHandle}
+                                        onChange={(e) => setCodeforcesHandle(e.target.value)}
+                                        className="bg-white dark:bg-gray-900"
+                                    />
+                                    {statsErrors.codeforces && (
+                                        <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                                            <AlertCircle className="w-4 h-4" />
+                                            {statsErrors.codeforces}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                            {platformStats?.lastFetched && (
+                                <p className="text-xs text-gray-500 mt-3">
+                                    Last updated: {new Date(platformStats.lastFetched).toLocaleString()}
+                                </p>
+                            )}
+                        </Card>
+
+                        {/* Stats Cards */}
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {/* LeetCode Stats Card */}
+                            {platformStats?.leetcode && (
+                                <Card className="p-6 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-800">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h4 className="text-lg font-bold text-gray-900 dark:text-white">LeetCode</h4>
+                                        <Trophy className="w-6 h-6 text-yellow-500" />
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">Total Solved</p>
+                                            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                                                {platformStats.leetcode.totalSolved}
+                                            </p>
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <div className="text-center p-2 bg-green-100 dark:bg-green-900/30 rounded">
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">Easy</p>
+                                                <p className="text-lg font-bold text-green-700 dark:text-green-400">
+                                                    {platformStats.leetcode.easySolved}
+                                                </p>
+                                            </div>
+                                            <div className="text-center p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded">
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">Medium</p>
+                                                <p className="text-lg font-bold text-yellow-700 dark:text-yellow-400">
+                                                    {platformStats.leetcode.mediumSolved}
+                                                </p>
+                                            </div>
+                                            <div className="text-center p-2 bg-red-100 dark:bg-red-900/30 rounded">
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">Hard</p>
+                                                <p className="text-lg font-bold text-red-700 dark:text-red-400">
+                                                    {platformStats.leetcode.hardSolved}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="pt-3 border-t border-yellow-200 dark:border-yellow-800">
+                                            <div className="flex items-center justify-between text-sm">
+                                                <span className="text-gray-600 dark:text-gray-400">Ranking</span>
+                                                <span className="font-semibold text-gray-900 dark:text-white">
+                                                    #{platformStats.leetcode.ranking.toLocaleString()}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center justify-between text-sm mt-2">
+                                                <span className="text-gray-600 dark:text-gray-400">Acceptance Rate</span>
+                                                <span className="font-semibold text-gray-900 dark:text-white">
+                                                    {platformStats.leetcode.acceptanceRate}%
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Card>
+                            )}
+
+                            {/* Codeforces Stats Card */}
+                            {platformStats?.codeforces && (
+                                <Card className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h4 className="text-lg font-bold text-gray-900 dark:text-white">Codeforces</h4>
+                                        <Target className="w-6 h-6 text-blue-500" />
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">Current Rating</p>
+                                            <p className="text-3xl font-bold" style={{ color: getCodeforcesRankColor(platformStats.codeforces.rank) }}>
+                                                {platformStats.codeforces.rating}
+                                            </p>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded">
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">Max Rating</p>
+                                                <p className="text-lg font-bold text-blue-700 dark:text-blue-400">
+                                                    {platformStats.codeforces.maxRating}
+                                                </p>
+                                            </div>
+                                            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded">
+                                                <p className="text-xs text-gray-600 dark:text-gray-400">Max Rank</p>
+                                                <p className="text-sm font-bold text-purple-700 dark:text-purple-400 capitalize">
+                                                    {platformStats.codeforces.maxRank}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="pt-3 border-t border-blue-200 dark:border-blue-800">
+                                            <div className="flex items-center justify-between text-sm">
+                                                <span className="text-gray-600 dark:text-gray-400">Current Rank</span>
+                                                <span
+                                                    className="font-semibold capitalize"
+                                                    style={{ color: getCodeforcesRankColor(platformStats.codeforces.rank) }}
+                                                >
+                                                    {platformStats.codeforces.rank}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center justify-between text-sm mt-2">
+                                                <span className="text-gray-600 dark:text-gray-400">Contribution</span>
+                                                <span className="font-semibold text-gray-900 dark:text-white flex items-center gap-1">
+                                                    <TrendingUp className="w-4 h-4" />
+                                                    {platformStats.codeforces.contribution}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Card>
+                            )}
+                        </div>
+
+                        {/* Empty State or Tips */}
+                        {!platformStats?.leetcode && !platformStats?.codeforces && !isLoadingStats && (
+                            <Card className="p-12 text-center border-gray-200 dark:border-gray-700">
+                                <BarChart3 className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                                    Track Your Coding Progress
+                                </h3>
+                                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                                    Enter your LeetCode username and/or Codeforces handle above to see your stats
+                                </p>
+                            </Card>
+                        )}
                     </TabsContent>
                 </Tabs>
 
