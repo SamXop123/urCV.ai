@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,14 @@ import {
     Clock,
     Zap,
     Filter,
+    BarChart3,
+    RefreshCw,
+    Trophy,
+    Target,
+    TrendingUp,
+    AlertCircle,
+    Loader2,
+    User,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -32,6 +40,19 @@ import {
     type CodingPattern,
     type LanguageTopic,
 } from "@/lib/codingContent";
+import {
+    type LeetCodeStats,
+    type CodeforcesStats,
+    type PlatformStats,
+    fetchLeetCodeStats,
+    fetchCodeforcesStats,
+    getCachedStats,
+    setCachedStats,
+    getCachedUsernames,
+    setCachedUsernames,
+    getCodeforcesRankColor,
+    getDifficultyColor,
+} from "@/lib/platformStatsService";
 
 const difficultyColors = {
     easy: "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800",
@@ -57,6 +78,13 @@ const CodingPrep = () => {
     const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
     const [completedProblems, setCompletedProblems] = useState<Set<string>>(new Set());
 
+    // Platform stats state
+    const [leetcodeUsername, setLeetcodeUsername] = useState("");
+    const [codeforcesHandle, setCodeforcesHandle] = useState("");
+    const [platformStats, setPlatformStats] = useState<PlatformStats | null>(null);
+    const [isLoadingStats, setIsLoadingStats] = useState(false);
+    const [statsErrors, setStatsErrors] = useState<{ leetcode?: string; codeforces?: string }>({});
+
     // Load completed problems from localStorage
     useEffect(() => {
         const saved = localStorage.getItem("completedCodingProblems");
@@ -64,6 +92,58 @@ const CodingPrep = () => {
             setCompletedProblems(new Set(JSON.parse(saved)));
         }
     }, []);
+
+    // Load cached usernames and stats
+    useEffect(() => {
+        const { leetcode, codeforces } = getCachedUsernames();
+        setLeetcodeUsername(leetcode);
+        setCodeforcesHandle(codeforces);
+
+        const cachedStats = getCachedStats();
+        if (cachedStats) {
+            setPlatformStats(cachedStats);
+        }
+    }, []);
+
+    // Fetch platform stats
+    const fetchStats = useCallback(async () => {
+        if (!leetcodeUsername.trim() && !codeforcesHandle.trim()) return;
+
+        setIsLoadingStats(true);
+        setStatsErrors({});
+
+        const newStats: PlatformStats = {
+            leetcode: null,
+            codeforces: null,
+            lastFetched: Date.now(),
+            errors: {},
+        };
+
+        // Fetch LeetCode stats
+        if (leetcodeUsername.trim()) {
+            try {
+                newStats.leetcode = await fetchLeetCodeStats(leetcodeUsername);
+            } catch (error) {
+                newStats.errors.leetcode = error instanceof Error ? error.message : "Failed to fetch";
+                setStatsErrors((prev) => ({ ...prev, leetcode: newStats.errors.leetcode }));
+            }
+        }
+
+        // Fetch Codeforces stats
+        if (codeforcesHandle.trim()) {
+            try {
+                newStats.codeforces = await fetchCodeforcesStats(codeforcesHandle);
+            } catch (error) {
+                newStats.errors.codeforces = error instanceof Error ? error.message : "Failed to fetch";
+                setStatsErrors((prev) => ({ ...prev, codeforces: newStats.errors.codeforces }));
+            }
+        }
+
+        setPlatformStats(newStats);
+        setCachedStats(newStats);
+        setCachedUsernames(leetcodeUsername, codeforcesHandle);
+        setIsLoadingStats(false);
+    }, [leetcodeUsername, codeforcesHandle]);
 
     // Save completed problems to localStorage
     const toggleProblemComplete = (id: string) => {
@@ -391,6 +471,279 @@ const CodingPrep = () => {
         );
     };
 
+    // Render Stats Tab
+    const renderStatsTab = () => {
+        const lcStats = platformStats?.leetcode;
+        const cfStats = platformStats?.codeforces;
+
+        return (
+            <div className="space-y-6">
+                {/* Username Inputs */}
+                <Card className="p-6 border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                            <User className="w-5 h-5" />
+                            Platform Settings
+                        </h3>
+                        <Button
+                            onClick={fetchStats}
+                            disabled={isLoadingStats || (!leetcodeUsername && !codeforcesHandle)}
+                            size="sm"
+                            className="flex items-center gap-2"
+                        >
+                            {isLoadingStats ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <RefreshCw className="w-4 h-4" />
+                            )}
+                            {isLoadingStats ? "Loading..." : "Fetch Stats"}
+                        </Button>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                LeetCode Username
+                            </label>
+                            <Input
+                                placeholder="e.g., johndoe"
+                                value={leetcodeUsername}
+                                onChange={(e) => setLeetcodeUsername(e.target.value)}
+                                className="bg-white dark:bg-gray-900"
+                            />
+                            {statsErrors.leetcode && (
+                                <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                                    <AlertCircle className="w-4 h-4" />
+                                    {statsErrors.leetcode}
+                                </p>
+                            )}
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Codeforces Handle
+                            </label>
+                            <Input
+                                placeholder="e.g., tourist"
+                                value={codeforcesHandle}
+                                onChange={(e) => setCodeforcesHandle(e.target.value)}
+                                className="bg-white dark:bg-gray-900"
+                            />
+                            {statsErrors.codeforces && (
+                                <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                                    <AlertCircle className="w-4 h-4" />
+                                    {statsErrors.codeforces}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                    {platformStats?.lastFetched && (
+                        <p className="text-xs text-gray-500 mt-3">
+                            Last updated: {new Date(platformStats.lastFetched).toLocaleString()}
+                        </p>
+                    )}
+                </Card>
+
+                {/* Stats Cards */}
+                <div className="grid md:grid-cols-2 gap-6">
+                    {/* LeetCode Stats Card */}
+                    <Card className="p-6 border-gray-200 dark:border-gray-700 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/10 dark:to-yellow-900/10 border-orange-200 dark:border-orange-800">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center">
+                                    <Code className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900 dark:text-white">LeetCode</h3>
+                                    {lcStats && (
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">@{lcStats.username}</p>
+                                    )}
+                                </div>
+                            </div>
+                            {lcStats && (
+                                <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300">
+                                    Rank #{lcStats.ranking.toLocaleString()}
+                                </Badge>
+                            )}
+                        </div>
+
+                        {lcStats ? (
+                            <div className="space-y-4">
+                                {/* Total Solved */}
+                                <div className="text-center p-4 bg-white/50 dark:bg-gray-900/50 rounded-lg">
+                                    <div className="text-4xl font-bold text-orange-600 dark:text-orange-400">
+                                        {lcStats.totalSolved}
+                                    </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">Problems Solved</div>
+                                </div>
+
+                                {/* Difficulty Breakdown */}
+                                <div className="grid grid-cols-3 gap-2">
+                                    <div className="text-center p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                        <div className="text-xl font-bold text-green-600 dark:text-green-400">
+                                            {lcStats.easySolved}
+                                        </div>
+                                        <div className="text-xs text-green-700 dark:text-green-300">Easy</div>
+                                    </div>
+                                    <div className="text-center p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                                        <div className="text-xl font-bold text-yellow-600 dark:text-yellow-400">
+                                            {lcStats.mediumSolved}
+                                        </div>
+                                        <div className="text-xs text-yellow-700 dark:text-yellow-300">Medium</div>
+                                    </div>
+                                    <div className="text-center p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                                        <div className="text-xl font-bold text-red-600 dark:text-red-400">
+                                            {lcStats.hardSolved}
+                                        </div>
+                                        <div className="text-xs text-red-700 dark:text-red-300">Hard</div>
+                                    </div>
+                                </div>
+
+                                {/* Acceptance Rate */}
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                                        <Target className="w-4 h-4" />
+                                        Acceptance Rate
+                                    </span>
+                                    <span className="font-semibold text-gray-900 dark:text-white">
+                                        {lcStats.acceptanceRate.toFixed(1)}%
+                                    </span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                <Code className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                                <p>Enter your LeetCode username to see stats</p>
+                            </div>
+                        )}
+                    </Card>
+
+                    {/* Codeforces Stats Card */}
+                    <Card className="p-6 border-gray-200 dark:border-gray-700 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/10 dark:to-cyan-900/10 border-blue-200 dark:border-blue-800">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
+                                    <Trophy className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900 dark:text-white">Codeforces</h3>
+                                    {cfStats && (
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">@{cfStats.handle}</p>
+                                    )}
+                                </div>
+                            </div>
+                            {cfStats && (
+                                <Badge
+                                    style={{ backgroundColor: getCodeforcesRankColor(cfStats.rank), color: "white" }}
+                                    className="capitalize"
+                                >
+                                    {cfStats.rank}
+                                </Badge>
+                            )}
+                        </div>
+
+                        {cfStats ? (
+                            <div className="space-y-4">
+                                {/* Rating */}
+                                <div className="text-center p-4 bg-white/50 dark:bg-gray-900/50 rounded-lg">
+                                    <div
+                                        className="text-4xl font-bold"
+                                        style={{ color: getCodeforcesRankColor(cfStats.rank) }}
+                                    >
+                                        {cfStats.rating}
+                                    </div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">Current Rating</div>
+                                </div>
+
+                                {/* Max Rating */}
+                                <div className="flex items-center justify-between p-3 bg-white/50 dark:bg-gray-900/50 rounded-lg">
+                                    <span className="text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                                        <TrendingUp className="w-4 h-4" />
+                                        Max Rating
+                                    </span>
+                                    <div className="text-right">
+                                        <span
+                                            className="font-bold"
+                                            style={{ color: getCodeforcesRankColor(cfStats.maxRank) }}
+                                        >
+                                            {cfStats.maxRating}
+                                        </span>
+                                        <span className="text-xs text-gray-500 ml-1 capitalize">({cfStats.maxRank})</span>
+                                    </div>
+                                </div>
+
+                                {/* Contribution */}
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                                        <BarChart3 className="w-4 h-4" />
+                                        Contribution
+                                    </span>
+                                    <span
+                                        className={`font-semibold ${cfStats.contribution >= 0 ? "text-green-600" : "text-red-600"
+                                            }`}
+                                    >
+                                        {cfStats.contribution >= 0 ? "+" : ""}
+                                        {cfStats.contribution}
+                                    </span>
+                                </div>
+
+                                {/* Friend Count */}
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className="text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                                        <User className="w-4 h-4" />
+                                        Friend of
+                                    </span>
+                                    <span className="font-semibold text-gray-900 dark:text-white">
+                                        {cfStats.friendOfCount} users
+                                    </span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                <Trophy className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                                <p>Enter your Codeforces handle to see stats</p>
+                            </div>
+                        )}
+                    </Card>
+                </div>
+
+                {/* Tips for improving */}
+                {(lcStats || cfStats) && (
+                    <Card className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-800">
+                        <h3 className="font-bold text-purple-900 dark:text-purple-100 mb-3 flex items-center gap-2">
+                            <Zap className="w-5 h-5" />
+                            Keep Going!
+                        </h3>
+                        <div className="grid md:grid-cols-2 gap-3 text-sm text-purple-800 dark:text-purple-200">
+                            {lcStats && lcStats.totalSolved < 100 && (
+                                <div className="flex items-start gap-2">
+                                    <Target className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                    <span>Target 100 problems to build a solid foundation</span>
+                                </div>
+                            )}
+                            {cfStats && cfStats.rating < 1200 && (
+                                <div className="flex items-start gap-2">
+                                    <TrendingUp className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                    <span>Practice Div 4 & 3 contests to improve rating</span>
+                                </div>
+                            )}
+                            {lcStats && lcStats.hardSolved < 20 && (
+                                <div className="flex items-start gap-2">
+                                    <Trophy className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                    <span>Challenge yourself with more hard problems</span>
+                                </div>
+                            )}
+                            {cfStats && cfStats.rating >= 1200 && (
+                                <div className="flex items-start gap-2">
+                                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                    <span>Great progress! Keep participating in contests</span>
+                                </div>
+                            )}
+                        </div>
+                    </Card>
+                )}
+            </div>
+        );
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
             {/* Navigation */}
@@ -436,7 +789,7 @@ const CodingPrep = () => {
 
                 {/* Tabs */}
                 <Tabs defaultValue="problems" className="max-w-4xl mx-auto">
-                    <TabsList className="grid w-full grid-cols-4 mb-8">
+                    <TabsList className="grid w-full grid-cols-5 mb-8">
                         <TabsTrigger value="problems" className="flex items-center gap-2">
                             <Code className="w-4 h-4" />
                             <span className="hidden sm:inline">Problems</span>
@@ -452,6 +805,10 @@ const CodingPrep = () => {
                         <TabsTrigger value="languages" className="flex items-center gap-2">
                             <Layers className="w-4 h-4" />
                             <span className="hidden sm:inline">Languages</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="stats" className="flex items-center gap-2">
+                            <BarChart3 className="w-4 h-4" />
+                            <span className="hidden sm:inline">Stats</span>
                         </TabsTrigger>
                     </TabsList>
 
@@ -544,6 +901,11 @@ const CodingPrep = () => {
                         <div className="grid gap-4">
                             {languageTopics.map(renderLanguageCard)}
                         </div>
+                    </TabsContent>
+
+                    {/* Stats Tab */}
+                    <TabsContent value="stats" className="space-y-6">
+                        {renderStatsTab()}
                     </TabsContent>
                 </Tabs>
 
