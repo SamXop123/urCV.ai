@@ -261,7 +261,7 @@ const Index = () => {
               linesColor="rgba(0, 0, 0, 0.15)"
               gridScale={0.08}
               scanColor="#87CEEB"
-              scanOpacity={20}
+              scanOpacity={100}
               enablePost
               bloomIntensity={1}
               chromaticAberration={0.003}
@@ -271,9 +271,15 @@ const Index = () => {
           </div>
 
           {/* Overlay gradients for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-50/90 via-transparent to-gray-50/80 dark:from-gray-900/95 dark:via-gray-900/90 dark:to-gray-900/95" />
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 via-transparent to-purple-50/30 dark:from-blue-900/20 dark:via-transparent dark:to-purple-900/20" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-transparent to-gray-50/90 dark:to-gray-900/95" />
+          {/* Your original gradients - works in both modes */}
+<div className="absolute inset-0 bg-gradient-to-t from-gray-50/90 via-transparent to-gray-50/80 dark:from-gray-900/95 dark:via-gray-900/90 dark:to-gray-900/95" />
+<div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 via-transparent to-purple-50/30 dark:from-blue-900/20 dark:via-transparent dark:to-purple-900/20" />
+<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-transparent to-gray-50/90 dark:to-gray-900/95" />
+
+{/* Additional light mode gradients only (with more gray) */}
+<div className="absolute inset-0 dark:hidden bg-gradient-to-t from-gray-100/80 via-gray-50/60 to-gray-200/90" />
+<div className="absolute inset-0 dark:hidden bg-gradient-to-r from-gray-200/40 via-gray-100/30 to-gray-200/40" />
+<div className="absolute inset-0 dark:hidden bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-50/50 via-transparent to-gray-100/80" />
         </div>
 
         {/* Hero Content */}
