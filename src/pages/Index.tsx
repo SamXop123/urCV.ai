@@ -236,40 +236,39 @@ const Index = () => {
             />
           </div>
 
-          {/* Dark mode GridScan overlay */}
-          <div className="absolute inset-0">
-            <GridScan
-              sensitivity={0.55}
-              lineThickness={0}
-              linesColor="rgba(0, 0, 0, 0.15)"
-              gridScale={0.08}
-              scanColor="#87CEEB"
-              scanOpacity={1}
-              enablePost
-              bloomIntensity={1}
-              chromaticAberration={0.001}
-              noiseIntensity={1}
-              enableGyro={true}
-            />
-          </div>
+{/* Dark mode GridScan overlay - only shows in dark mode */}
+<div className="absolute inset-0 hidden dark:block">
+  <GridScan
+    sensitivity={0.55}
+    lineThickness={0}
+    linesColor="rgba(0, 0, 0, 0.15)"
+    gridScale={0.08}
+    scanColor="#87CEEB"
+    scanOpacity={1}
+    enablePost
+    bloomIntensity={1}
+    chromaticAberration={0.001}
+    noiseIntensity={1}
+    enableGyro={true}
+  />
+</div>
 
-          {/* Light mode GridScan overlay */}
-          <div className="absolute inset-0 hidden dark:block">
-            <GridScan
-              sensitivity={0.55}
-              lineThickness={0}
-              linesColor="rgba(0, 0, 0, 0.15)"
-              gridScale={0.08}
-              scanColor="#87CEEB"
-              scanOpacity={100}
-              enablePost
-              bloomIntensity={1}
-              chromaticAberration={0.003}
-              noiseIntensity={1}
-              enableGyro={true}
-            />
-          </div>
-
+{/* Light mode GridScan overlay - only shows in light mode */}
+<div className="absolute inset-0 dark:hidden">
+  <GridScan
+    sensitivity={0.55}
+    lineThickness={0}
+    linesColor="rgba(0, 0, 0, 0.25)"  
+    gridScale={0.08}
+    scanColor="#00A5A3" 
+    scanOpacity={1} // Changed from 100 to 1 (opacity typically ranges 0-1)
+    enablePost
+    bloomIntensity={1}
+    chromaticAberration={1}
+    noiseIntensity={1}
+    enableGyro={true}
+  />
+</div>
           {/* Overlay gradients for better text readability */}
           {/* Your original gradients - works in both modes */}
 <div className="absolute inset-0 bg-gradient-to-t from-gray-50/90 via-transparent to-gray-50/80 dark:from-gray-900/95 dark:via-gray-900/90 dark:to-gray-900/95" />
