@@ -211,7 +211,7 @@ const CodingPrep = () => {
                                 {completedProblems.size} / {codingProblems.length} problems solved
                             </span>
                         </div>
-                        <Progress value={progressPercentage} className="h-2" />
+                        <Progress value={progressPercentage} className="h-2 bg-gray-200 dark:bg-gray-800" />
                     </Card>
                 </div>
 
